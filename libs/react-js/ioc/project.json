@@ -3,7 +3,6 @@
   "author": "Adi-Marian Mutu",
   "description": "A simple Inversion of Control library for `ReactJS` built on top of the `injection-js` library.",
   "license": "MIT",
-  "keywords": ["inversion of control", "ioc", "react", "reactjs", "di", "dependency injection"],
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/react-js/ioc/src",
   "projectType": "library",

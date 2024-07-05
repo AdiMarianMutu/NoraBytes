@@ -1,6 +1,6 @@
 {
   "name": "@norabytes/reactjs-ioc",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc/README.md",
   "repository": {
     "type": "git",
@@ -8,6 +8,14 @@
   },
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "license": "MIT",
+  "keywords": [
+    "inversion of control",
+    "ioc",
+    "react",
+    "reactjs",
+    "di",
+    "dependency injection"
+  ],
   "private": false,
   "scripts": {
     "build": "nx build reactjs-ioc",
