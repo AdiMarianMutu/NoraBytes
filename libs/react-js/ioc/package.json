@@ -19,7 +19,8 @@
   ],
   "private": false,
   "scripts": {
-    "build": "nx build reactjs-ioc",
+    "lint": "nx lint reactjs-ioc",
+    "build": "npm run lint && nx build reactjs-ioc",
     "publish-lib": "npm run build && npm --prefix libs/react-js/ioc/dist publish --access public"
   },
   "dependencies": {
