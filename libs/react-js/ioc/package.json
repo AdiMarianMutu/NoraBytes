@@ -1,0 +1,20 @@
+{
+  "name": "@norabytes/reactjs-ioc",
+  "version": "1.0.0",
+  "private": false,
+  "dependencies": {
+    "injection-js": "2.4.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "type-fest": "^4.21.0"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "reflect-metadata": "0.2.2",
+    "react-dom": "^18.3.1"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}
