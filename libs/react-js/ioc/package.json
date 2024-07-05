@@ -4,6 +4,7 @@
   "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc/README.md",
   "repository": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc",
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
+  "license": "MIT",
   "private": false,
   "scripts": {
     "publish": "npm --prefix libs/react-js/ioc/dist publish --access public"
