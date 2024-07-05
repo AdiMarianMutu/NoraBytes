@@ -2,13 +2,16 @@
   "name": "@norabytes/reactjs-ioc",
   "version": "1.0.0",
   "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc/README.md",
-  "repository": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc"
+  },
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "license": "MIT",
   "private": false,
   "scripts": {
     "build": "nx build reactjs-ioc",
-    "publish": "npm run build && npm --prefix libs/react-js/ioc/dist publish --access public"
+    "publish-lib": "npm run build && npm --prefix libs/react-js/ioc/dist publish --access public"
   },
   "dependencies": {
     "injection-js": "2.4.0",
