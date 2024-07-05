@@ -7,7 +7,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "publish": "npm --prefix libs/react-js/ioc/dist publish --access public"
+    "build": "nx build reactjs-ioc",
+    "publish": "npm run build && npm --prefix libs/react-js/ioc/dist publish --access public"
   },
   "dependencies": {
     "injection-js": "2.4.0",
