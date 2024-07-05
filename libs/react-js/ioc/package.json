@@ -1,12 +1,13 @@
 {
   "name": "@norabytes/reactjs-ioc",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
+  "description": "A simple Inversion of Control library for `ReactJS` built on top of the `injection-js` library.",
   "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc/README.md",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc"
   },
-  "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "license": "MIT",
   "keywords": [
     "inversion of control",
