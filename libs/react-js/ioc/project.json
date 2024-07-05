@@ -11,8 +11,7 @@
       "options": {
         "outputPath": "libs/react-js/ioc/dist",
         "main": "libs/react-js/ioc/src/index.ts",
-        "tsConfig": "libs/react-js/ioc/tsconfig.lib.json",
-        "assets": ["libs/react-js/ioc/*.md"]
+        "tsConfig": "libs/react-js/ioc/tsconfig.lib.json"
       }
     },
     "lint": {
