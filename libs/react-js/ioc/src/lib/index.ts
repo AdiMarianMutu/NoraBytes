@@ -1,5 +1,3 @@
-export * as Injector from './injector'
-export * as Context from './contexts';
-export type * from './models';
-export * from './container';
-export * from './hooks';
+export type { ContainerModule } from './injector/models';
+export { Injector } from './injector';
+export { useInject } from './hooks';
