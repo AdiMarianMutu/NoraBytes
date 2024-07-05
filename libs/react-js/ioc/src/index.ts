@@ -1,1 +1,1 @@
-export * as IoC from './lib';
+export * from './lib';
