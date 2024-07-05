@@ -1,28 +1,26 @@
 import type React from 'react';
 import type { Models } from './injector';
 
-export interface ContainerProviderProps {
+export interface InjectorProviderProps {
   children: React.ReactElement | null;
 
-  /**
-   * The `container` module.
-   *
-   * @see {@link ContainerModule}
-   */
-  module: Models.ContainerModule;
+  /** The {@link Models.ProviderModule | ProviderModule}. */
+  module: Models.ProviderModule;
 
   /**
-   * Can be used to get access to the component `dependencies` before the component has been rendered.
+   * Can be used to get access to the component `dependencies` _before_ the component has been rendered _(mounted)_.
    *
    * eg:
    * ```tsx
-   * <DI.React.Container module={ContactUsForm.ComponentModule} preInjection={() => {
-   *  const componentService = DI.React.useInject(MyComponent.Service);
+   * import { InjectorProvider, useInject } from '@norabytes/reactjs-ioc';
    *
-   *  componentService.init();
+   * <InjectorProvider module={ContactUsForm.ProviderModule} preInjection={() => {
+   *  const contactUsFormService = useInject(ContactUsForm.Service);
+   *
+   *  contactUsFormService.init();
    * }}>
    *  <MyComponent />
-   * </DI.React.Container>
+   * </InjectorProvider>
    * ```
    */
   preInjection?: () => void;

@@ -1,22 +1,22 @@
 import type { Provider, ReflectiveInjector } from 'injection-js';
 import type { AdvancedTypes } from '@types';
-import type { ContainerModule, DependencyToken } from './container';
+import type { ProviderModule, DependencyToken } from './module';
 
 export interface IInjectorFactory {
   /**
    * Inject the provided dependencies into the `root` {@link ReflectiveInjector | container}.
    *
    * _All the injected deps will be `singletons`._
-   * @param deps See {@link ContainerModule}.
+   * @param deps See {@link ProviderModule}.
    */
-  injectIntoRoot(deps: ContainerModule): void;
+  injectIntoRoot(deps: ProviderModule): void;
 
   /**
    * Inject the provided dependencies into the selected `scoped` {@link ReflectiveInjector | container}.
    * @param key The unique {@link key} which has been used during the creation of this `scoped` container.
-   * @param deps See {@link ContainerModule}.
+   * @param deps See {@link ProviderModule}.
    */
-  injectIntoScoped(key: string, deps: ContainerModule): void;
+  injectIntoScoped(key: string, deps: ProviderModule): void;
 
   /**
    * Creates a new `scoped` {@link ReflectiveInjector | container}.
@@ -58,13 +58,13 @@ export interface IInjectorFactory {
   /** Deletes the specified `scoped` {@link ReflectiveInjector | container} from the cache. */
   deleteScopedInjector(key: string): boolean;
 
-  /** Can be used to `recursively` unwrap a {@link ContainerModule}. */
-  unwrapDeps(deps?: ContainerModule): Provider[];
+  /** Can be used to `recursively` unwrap a {@link ProviderModule}. */
+  unwrapDeps(deps?: ProviderModule): Provider[];
 }
 
 export interface CreateTransientInjectorParams {
   /** The dependencies to be provided. */
-  deps: ContainerModule;
+  deps: ProviderModule;
 
   /**
    * When set to `true`, the `transient` {@link ReflectiveInjector | container} will be resolved from the {@link ReflectiveInjector | root container}.
@@ -74,8 +74,7 @@ export interface CreateTransientInjectorParams {
   fromRootInjector?: boolean;
 }
 
-export interface CreateScopedInjectorParams
-  extends AdvancedTypes.SetOptional<CreateTransientInjectorParams, 'deps'> {
+export interface CreateScopedInjectorParams extends AdvancedTypes.SetOptional<CreateTransientInjectorParams, 'deps'> {
   /** The unique {@link key} of this `scoped` container.  */
   key: string;
 }

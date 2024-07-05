@@ -1,2 +1,2 @@
 export type * from './injector';
-export type * from './container';
+export type * from './module';

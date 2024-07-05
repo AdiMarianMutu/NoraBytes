@@ -1,6 +1,6 @@
 import { type Provider, ReflectiveInjector } from 'injection-js';
 import type {
-  ContainerModule,
+  ProviderModule,
   CreateScopedInjectorParams,
   CreateTransientInjectorParams,
   DependencyToken,
@@ -17,13 +17,13 @@ export class InjectorFactory implements IInjectorFactory {
 
   private readonly scopedInjectors = new Map<string, ReflectiveInjector>();
 
-  injectIntoRoot(deps: ContainerModule): void {
+  injectIntoRoot(deps: ProviderModule): void {
     const unwrapedDeps = this.unwrapDeps(deps);
 
     this.rootInjector = ReflectiveInjector.resolveAndCreate(unwrapedDeps, this.rootInjector);
   }
 
-  injectIntoScoped(key: string, deps: ContainerModule): void {
+  injectIntoScoped(key: string, deps: ProviderModule): void {
     if (!this.scopedInjectorExists(key)) {
       throw new Error(
         `The provided deps cannot be injected into the '${key}' Scoped Injector because it does not exist`
@@ -101,10 +101,10 @@ export class InjectorFactory implements IInjectorFactory {
     return this.scopedInjectors.delete(key);
   }
 
-  unwrapDeps(deps?: ContainerModule): Provider[] {
+  unwrapDeps(deps?: ProviderModule): Provider[] {
     if (deps === undefined) return [];
 
-    const recursivelyUnrwapProvidersFromModule = (modules?: ContainerModule[]): Provider[][] => {
+    const recursivelyUnrwapProvidersFromModule = (modules?: ProviderModule[]): Provider[][] => {
       return (
         modules?.flatMap((module) => {
           const providers = module.providers ?? [];
