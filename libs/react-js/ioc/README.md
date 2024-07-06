@@ -15,13 +15,18 @@ or
 Steps to correctly enable the [Reflect API](https://262.ecma-international.org/6.0/#sec-reflection 'Reflect API').
 
 1. Install the [@abraham/reflection](https://www.npmjs.com/package/@abraham/reflection '@abraham/reflection') library or the [reflect-metadata](https://www.npmjs.com/package/reflect-metadata 'reflect-metadata') library.
-2. If you are using `TypeScript`, set to `true` the below properties in your `tsconfig.json` file:
-   1. `experimentalDecorators`
-   2. `emitDecoratorMetadata`
-3. Provide the installed [Reflect API](https://262.ecma-international.org/6.0/#sec-reflection 'Reflect API') `polyfill` by either doing:
+2. Provide the installed [Reflect API](https://262.ecma-international.org/6.0/#sec-reflection 'Reflect API') `polyfill` by either doing:
    1. In your `.env` file add: `NODE_OPTIONS=--require @abraham/reflection` or `NODE_OPTIONS=--require reflect-metadata`
    2. Manually import it with `import '@abraham/reflection'` or `import 'reflect-metadata'` into your app `entrypoint` file.
    3. Use the `polyfills` provider of your `transpiler` of choice.
+
+Steps required only if using `TS`.
+
+1. Make sure that your `TS` version is at least `4.7.0`
+2. In your `tsconfig.json` inside the `compilerOptions` object:
+   1. `"experimentalDecorators": true`
+   2. `"emitDecoratorMetadata": true`
+   3. `"moduleResolution": "NodeNext"`
 
 ### Example
 
@@ -45,7 +50,7 @@ export class ApiService {
 ```ts
 // ./services/api/api.module.ts
 
-import type { ProviderModule } from '@norabytes/reactjs-ioc';
+import { ProviderModule } from '@norabytes/reactjs-ioc';
 import { ApiService } from './api.service';
 
 export const ApiServiceModule = new ProviderModule({
@@ -74,7 +79,7 @@ export class UserService {
 ```ts
 // ./services/user/user.module.ts
 
-import type { ProviderModule } from '@norabytes/reactjs-ioc';
+import { ProviderModule } from '@norabytes/reactjs-ioc';
 import { UserService } from './user.service';
 
 export const UserServiceModule = new ProviderModule({
@@ -87,7 +92,7 @@ export const UserServiceModule = new ProviderModule({
 ```ts
 // ./app.module.ts
 
-import type { ProviderModule } from '@norabytes/reactjs-ioc';
+import { ProviderModule } from '@norabytes/reactjs-ioc';
 
 // Modules
 import { ApiServiceModule } from './api';
@@ -106,8 +111,9 @@ You can now inject both the `ApiService` and the `UserService` in your `ReactJS`
 ```tsx
 // ./app.tsx
 
-import { Injector, InjectorProvider } from '@norabytes/reactjs-ioc';
 import React from 'react';
+import { Injector } from '@norabytes/reactjs-ioc';
+import { InjectorProvider } from '@norabytes/reactjs-ioc/r';
 import { AppModule } from './app.module';
 import { RootLayout } from './root.layout';
 
@@ -125,8 +131,8 @@ export function App({ children }: { React.ReactElement }) {
 
 // The `Homepage` components is rendered by the `RootLayout` somewhere down the tree.
 
-import { useInject } from '@norabytes/reactjs-ioc';
 import { useEffect } from 'react';
+import { useInject } from '@norabytes/reactjs-ioc/r';
 import { ApiService } from '../services/api';
 
 export function Homepage() {
@@ -157,14 +163,8 @@ _FAQs:_
     > ```tsx
     > // ./app.tsx
     >
-    > // Be aware that you'll get this error `'React.createContext' is not a function` when trying to import the `Injector` inside a `ServerComponent`
-    > // by using this import statement: `import { Injector } from '@norabytes/reactjs-ioc'`
-    > //
-    > // This happens because the `import { Injector } from '@norabytes/reactjs-ioc'` uses barrel files to export from the library.
-    > //
-    > // You can avoid this by using the follwoing import statement.
-    > import { Injector } from '@norabytes/reactjs-ioc/dist/src/injector';
     > import React from 'react';
+    > import { Injector } from '@norabytes/reactjs-ioc';
     > import { AppModule } from './app.module';
     > import { RootLayout } from './root.layout';
     >
@@ -240,7 +240,7 @@ export const MyComponentModuleMock = new ProviderModule({
 ```ts
 // ./my-component/tests/mocks/my-component.mock.ts
 
-import { InjectorProvider } from '@norabytes/reactjs-ioc';
+import { InjectorProvider } from '@norabytes/reactjs-ioc/r';
 import { MyComponent, MyComponentModuleMock } from '...';
 
 export function MyComponentMock(props: PropsType) {
