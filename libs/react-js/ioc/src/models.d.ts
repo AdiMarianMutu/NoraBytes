@@ -1,6 +1,8 @@
 import type React from 'react';
 import type { Models } from './injector';
 
+export * as AdvancedTypes from 'type-fest';
+
 export interface InjectorProviderProps {
   children: React.ReactElement | null;
 

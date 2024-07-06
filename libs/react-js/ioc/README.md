@@ -135,7 +135,7 @@ which are going to use the `useInject` hook and the `InjectorProvider` HoCompone
 
 > Be aware that you'll also get this error `'React.createContext' is not a function` when trying to import the `Injector` inside a `ServerComponent`. </br>
 > This happens because the `import { Injector } from '@norabytes/reactjs-ioc'` uses [barrel files](https://basarat.gitbook.io/typescript/main-1/barrel 'barrel files') to `export` from the library. </br>
-> You can avoid this by using `import { Injector } from '@norabytes/reactjs-ioc/dist/src/lib/injector'` instead.
+> You can avoid this by using `import { Injector } from '@norabytes/reactjs-ioc/dist/src/injector'` instead.
 
 ### API
 

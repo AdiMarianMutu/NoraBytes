@@ -1,6 +1,6 @@
-import type { Provider, ReflectiveInjector } from 'injection-js';
-import type { AdvancedTypes } from '@types';
-import type { ProviderModule, DependencyToken } from './module';
+import { Provider, ReflectiveInjector } from 'injection-js';
+import { AdvancedTypes } from '../../models';
+import { ProviderModule, DependencyToken } from './module';
 
 export interface IInjectorFactory {
   /**

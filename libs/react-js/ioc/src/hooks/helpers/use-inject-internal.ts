@@ -1,7 +1,7 @@
 import { ReflectiveInjector, Injector as InjectorJs } from 'injection-js';
 import { useContext } from 'react';
 import { Injector, type Models } from '../../injector';
-import { InjectorContext } from '../../contexts';
+import { InjectorContext } from '../../injector.context';
 import { useOnce } from './use-once';
 
 export function useInjectInternal(deps: Models.ProviderModule) {

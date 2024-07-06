@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { propsWithoutChildren } from './helpers';
 import type { InjectorProviderProps } from './models';
-import { InjectorContext } from './contexts';
+import { InjectorContext } from './injector.context';
 import { useInjectInternal } from './hooks/helpers';
 
 /**
