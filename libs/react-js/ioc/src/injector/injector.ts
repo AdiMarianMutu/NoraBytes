@@ -5,7 +5,7 @@ import type {
   CreateTransientInjectorParams,
   DependencyToken,
   IInjectorFactory,
-} from './models';
+} from '../models';
 
 export class InjectorFactory implements IInjectorFactory {
   /**

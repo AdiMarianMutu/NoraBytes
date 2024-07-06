@@ -1,6 +1,49 @@
-import { Provider, ReflectiveInjector } from 'injection-js';
-import { AdvancedTypes } from '../../models';
-import { ProviderModule, DependencyToken } from './module';
+import type React from 'react';
+import type { InjectionToken, Provider, ReflectiveInjector, Type } from 'injection-js';
+import type * as AdvancedTypes from 'type-fest';
+
+export type { AdvancedTypes };
+
+//#region InjectorProvider
+
+export interface InjectorProviderProps {
+  children: React.ReactElement | null;
+
+  /** The {@link ProviderModule}. */
+  module: ProviderModule;
+
+  /**
+   * Can be used to get access to the component `dependencies` _before_ the component has been rendered _(mounted)_.
+   *
+   * eg:
+   * ```tsx
+   * import { InjectorProvider, useInject } from '@norabytes/reactjs-ioc';
+   *
+   * <InjectorProvider module={ContactUsForm.ProviderModule} preInjection={() => {
+   *  const contactUsFormService = useInject(ContactUsForm.Service);
+   *
+   *  contactUsFormService.init();
+   * }}>
+   *  <MyComponent />
+   * </InjectorProvider>
+   * ```
+   */
+  preInjection?: () => void;
+}
+
+//#endregion
+
+//#region Injector
+
+export interface ProviderModule {
+  /** Imports into this {@link ProviderModule} the {@link providers} of one or more {@link ProviderModule | ProviderModules}. */
+  modules?: ProviderModule[];
+
+  /** The `dependencies` which must be provided by this `container`. */
+  providers?: Provider[];
+}
+
+export type DependencyToken<T> = Type<T> | InjectionToken<T>;
 
 export interface IInjectorFactory {
   /**
@@ -78,3 +121,5 @@ export interface CreateScopedInjectorParams extends AdvancedTypes.SetOptional<Cr
   /** The unique {@link key} of this `scoped` container.  */
   key: string;
 }
+
+//#endregion
