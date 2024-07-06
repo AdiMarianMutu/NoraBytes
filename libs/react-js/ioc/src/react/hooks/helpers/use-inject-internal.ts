@@ -14,11 +14,14 @@ export function useInjectInternal({
   const contextInjector = useOnce(() => {
     if (injectorContainer === InjectorJs.NULL) {
       if (injectInto === 'root') {
-        return Injector.injectIntoRoot(module);
+        Injector.injectIntoRoot(module);
+
+        return Injector.getRootInjector();
       } else if (injectIntoIsScoped(injectInto)) {
         const key = injectInto.split(':')[1];
+        Injector.injectIntoScoped(key, module);
 
-        return Injector.injectIntoScoped(key, module);
+        return Injector.getScopedInjector(key);
       } else if (injectInto === 'transient') {
         return Injector.createTransientInjector({ module, fromRootInjector: false });
       } else {
