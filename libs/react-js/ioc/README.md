@@ -95,9 +95,6 @@ You can now inject both the `ApiService` and the `UserService` in your `ReactJS`
 ```tsx
 // ./app.tsx
 
-// N.B: If you use `NextJS` with the new `app` folder, you must add `'use client';`
-// at the root of the component which uses the `InjectorProvider` HoC!
-
 import { Injector, InjectorProvider } from '@norabytes/reactjs-ioc';
 import React from 'react';
 import { AppModule } from './app.module';
@@ -130,6 +127,15 @@ export function Homepage() {
   }, []);
 }
 ```
+
+### NextJS
+
+If you are using the new `app` folder introduced with `NextJS v13`, then you should be careful to add the `'use client'` directive at the top of the components
+which are going to use the `useInject` hook and the `InjectorProvider` HoComponent.
+
+> Be aware that you'll also get this error `'React.createContext' is not a function` when trying to import the `Injector` inside a `ServerComponent`. </br>
+> This happens because the `import { Injector } from '@norabytes/reactjs-ioc'` uses [barrel files](https://basarat.gitbook.io/typescript/main-1/barrel 'barrel files') to `export` from the library. </br>
+> You can avoid this by using `import { Injector } from '@norabytes/reactjs-ioc/dist/src/lib/injector'` instead.
 
 ### API
 
