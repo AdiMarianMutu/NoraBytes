@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import type { InjectorTypes } from '../types';
+import type { InjectorTypes } from '../../types';
 import { InjectorContext } from '../injector.context';
 
 /**

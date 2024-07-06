@@ -1,5 +1,5 @@
 import type { ReflectiveInjector } from 'injection-js';
-import type { IProviderModule } from './injector';
+import type { IProviderModule } from '../injector';
 
 export interface InjectorProviderProps {
   children: React.ReactElement | null;

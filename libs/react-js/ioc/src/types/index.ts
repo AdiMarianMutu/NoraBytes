@@ -1,2 +1,2 @@
 export type * as InjectorTypes from './injector';
-export type * from './injector-provider';
+export type * as InjectorReactTypes from './react';
