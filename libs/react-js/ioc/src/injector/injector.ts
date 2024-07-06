@@ -1,13 +1,7 @@
 import { type Provider, ReflectiveInjector } from 'injection-js';
-import type {
-  ProviderModule,
-  CreateScopedInjectorParams,
-  CreateTransientInjectorParams,
-  DependencyToken,
-  IInjectorFactory,
-} from '../models';
+import type { InjectorTypes } from '../types';
 
-export class InjectorFactory implements IInjectorFactory {
+export class InjectorFactory implements InjectorTypes.IInjectorFactory {
   /**
    * The `root` {@link ReflectiveInjector | Injector}.
    *
@@ -17,49 +11,50 @@ export class InjectorFactory implements IInjectorFactory {
 
   private readonly scopedInjectors = new Map<string, ReflectiveInjector>();
 
-  injectIntoRoot(deps: ProviderModule): void {
-    const unwrapedDeps = this.unwrapDeps(deps);
-
-    this.rootInjector = ReflectiveInjector.resolveAndCreate(unwrapedDeps, this.rootInjector);
+  injectIntoRoot(module: InjectorTypes.IProviderModule): void {
+    const providers = module.getProviders();
+    this.rootInjector = ReflectiveInjector.resolveAndCreate(providers, this.rootInjector);
   }
 
-  injectIntoScoped(key: string, deps: ProviderModule): void {
+  injectIntoScoped(key: string, module: InjectorTypes.IProviderModule): void {
     if (!this.scopedInjectorExists(key)) {
       throw new Error(
-        `The provided deps cannot be injected into the '${key}' Scoped Injector because it does not exist`
+        `The provided module cannot be injected into the '${key}' Scoped Injector because it does not exist`
       );
     }
 
-    const unwrapedDeps = this.unwrapDeps(deps);
-    const scopedInjector = this.scopedInjectors.get(key)!;
+    const existingScopedInjector = this.scopedInjectors.get(key)!;
+    const providers = module.getProviders();
 
-    this.scopedInjectors.set(key, ReflectiveInjector.resolveAndCreate(unwrapedDeps, scopedInjector));
+    existingScopedInjector.resolveAndCreateChild(providers);
   }
 
-  createScopedInjector({ key, deps, fromRootInjector = false }: CreateScopedInjectorParams): ReflectiveInjector {
+  createScopedInjector({
+    key,
+    module,
+    fromRootInjector = false,
+  }: InjectorTypes.CreateScopedInjectorParams): ReflectiveInjector {
     if (this.scopedInjectorExists(key)) {
       throw new Error(`The '${key}' Scoped Injector can't be created because it does already exist`);
     }
 
-    const unwrapedDeps = this.unwrapDeps(deps);
+    const providers = module?.getProviders() ?? [];
+    const scopedInjector = ReflectiveInjector.resolveAndCreate(
+      providers,
+      fromRootInjector ? this.rootInjector : undefined
+    );
 
-    if (!fromRootInjector) {
-      const resolvedDeps = ReflectiveInjector.resolve(unwrapedDeps);
-      return ReflectiveInjector.fromResolvedProviders(resolvedDeps);
-    }
-
-    return this.rootInjector.resolveAndCreateChild(unwrapedDeps);
+    this.scopedInjectors.set(key, scopedInjector);
+    return scopedInjector;
   }
 
-  createTransientInjector({ deps, fromRootInjector = false }: CreateTransientInjectorParams): ReflectiveInjector {
-    const unwrapedDeps = this.unwrapDeps(deps);
+  createTransientInjector({
+    module,
+    fromRootInjector = false,
+  }: InjectorTypes.CreateTransientInjectorParams): ReflectiveInjector {
+    const providers = module.getProviders();
 
-    if (!fromRootInjector) {
-      const resolvedDeps = ReflectiveInjector.resolve(unwrapedDeps);
-      return ReflectiveInjector.fromResolvedProviders(resolvedDeps);
-    }
-
-    return ReflectiveInjector.resolveAndCreate(unwrapedDeps, this.rootInjector);
+    return ReflectiveInjector.resolveAndCreate(providers, fromRootInjector ? this.rootInjector : undefined);
   }
 
   getRootInjector(): ReflectiveInjector {
@@ -70,55 +65,30 @@ export class InjectorFactory implements IInjectorFactory {
     return this._getScopedInjector(key, false);
   }
 
-  getSingleton<T>(
-    token: DependencyToken<T>,
-    notFoundValue?: T
-  ): typeof notFoundValue extends undefined ? T | undefined : T {
+  getSingleton<T>(token: InjectorTypes.DependencyToken<T>, notFoundValue?: T): T {
     return this.rootInjector.get(token, notFoundValue);
   }
 
-  getScoped<T>(
-    key: string,
-    token: DependencyToken<T>,
-    notFoundValue?: T
-  ): typeof notFoundValue extends undefined ? T | undefined : T {
+  getScoped<T>(key: string, token: InjectorTypes.DependencyToken<T>, notFoundValue?: T): T {
     const scopedInjector = this._getScopedInjector(key)!;
 
     return scopedInjector.get(token, notFoundValue);
   }
 
-  getTransientFromRoot<T>(provider: T): T | undefined {
-    return this.rootInjector.resolveAndInstantiate(provider as Provider);
+  getTransientFromRoot<T>(token: InjectorTypes.DependencyToken<T>, notFoundValue?: T): T {
+    const dependency = this.rootInjector.resolveAndInstantiate(token as Provider) as T;
+
+    return (dependency ?? notFoundValue) as T;
   }
 
-  getTransientFromScoped<T>(key: string, provider: T): T | undefined {
-    const scopedInjector = this._getScopedInjector(key)!;
+  getTransientFromScoped<T>(key: string, token: InjectorTypes.DependencyToken<T>, notFoundValue?: T): T {
+    const dependency = this._getScopedInjector(key)!.resolveAndInstantiate(token as Provider);
 
-    return scopedInjector.resolveAndInstantiate(provider as Provider);
+    return (dependency ?? notFoundValue) as T;
   }
 
   deleteScopedInjector(key: string): boolean {
     return this.scopedInjectors.delete(key);
-  }
-
-  unwrapDeps(deps?: ProviderModule): Provider[] {
-    if (deps === undefined) return [];
-
-    const recursivelyUnrwapProvidersFromModule = (modules?: ProviderModule[]): Provider[][] => {
-      return (
-        modules?.flatMap((module) => {
-          const providers = module.providers ?? [];
-          const nestedProviders = module.modules ? recursivelyUnrwapProvidersFromModule(module.modules) : [];
-
-          return [providers, ...nestedProviders];
-        }) ?? []
-      );
-    };
-
-    const moduleProviders = recursivelyUnrwapProvidersFromModule(deps.modules);
-    const providers = deps.providers ?? [];
-
-    return [...moduleProviders, ...providers];
   }
 
   private scopedInjectorExists(key: string): boolean {
@@ -136,4 +106,5 @@ export class InjectorFactory implements IInjectorFactory {
   }
 }
 
+/** Global instance of the {@link InjectorFactory} `class`. */
 export const Injector = new InjectorFactory();

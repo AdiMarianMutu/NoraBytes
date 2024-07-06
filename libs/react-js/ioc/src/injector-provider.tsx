@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react';
 import { propsWithoutChildren } from './helpers';
-import type { InjectorProviderProps } from './models';
+import type { InjectorProviderProps } from './types';
 import { InjectorContext } from './injector.context';
 import { useInjectInternal } from './hooks/helpers';
 
 /**
  * {@link https://legacy.reactjs.org/docs/higher-order-components.html | High-Order Component} which must be used to provide the `dependencies` provided by the {@link module}.
- * @param param0 See {@link InjectorProviderProps}.
+ *
+ * Check {@link InjectorProviderProps} for more examples and functionalities.
  *
  * eg:
  * ```tsx
@@ -19,8 +20,8 @@ import { useInjectInternal } from './hooks/helpers';
  * </InjectorProvider>
  * ```
  */
-export function InjectorProvider({ module, children, preInjection }: InjectorProviderProps) {
-  const contextInjector = useInjectInternal(module);
+export function InjectorProvider({ module, children, injectInto = 'transient', preInjection }: InjectorProviderProps) {
+  const contextInjector = useInjectInternal({ module, injectInto });
   const childrenProps = propsWithoutChildren(children?.props);
 
   const Renderer = useCallback(() => {

@@ -1,6 +1,14 @@
 ## **[NoraBytes](https://norabytes.com 'NoraBytes') © 2024**
 
-### [ReactJS](https://react.dev/ 'ReactJS') _Inversion of Control_
+### [ReactJS](https://react.dev/ 'ReactJS') Inversion of Control _(Compatible with **NextJS**!)_
+
+### Installation
+
+`npm install @norabytes/reactjs-ioc`
+
+or
+
+`yarn add @norabytes/reactjs-ioc`
 
 ### Usage
 
@@ -10,8 +18,10 @@ Steps to correctly enable the [Reflect API](https://262.ecma-international.org/6
 2. If you are using `TypeScript`, set to `true` the below properties in your `tsconfig.json` file:
    1. `experimentalDecorators`
    2. `emitDecoratorMetadata`
-3. Globally require the [@abraham/reflection](https://www.npmjs.com/package/@abraham/reflection '@abraham/reflection') `polyfill`.
+3. Provide the installed [Reflect API](https://262.ecma-international.org/6.0/#sec-reflection 'Reflect API') `polyfill` by either doing:
    1. In your `.env` file add: `NODE_OPTIONS=--require @abraham/reflection` or `NODE_OPTIONS=--require reflect-metadata`
+   2. Manually import it with `import '@abraham/reflection'` or `import 'reflect-metadata'` into your app `entrypoint` file.
+   3. Use the `polyfills` provider of your `transpiler` of choice.
 
 ### Example
 
@@ -22,7 +32,7 @@ Steps to correctly enable the [Reflect API](https://262.ecma-international.org/6
 ```ts
 // ./services/api/api.service.ts
 
-import { Injectable } from 'injection-js';
+import { Injectable } from '@norabytes/reactjs-ioc';
 
 @Injectable()
 export class ApiService {
@@ -38,9 +48,9 @@ export class ApiService {
 import type { ProviderModule } from '@norabytes/reactjs-ioc';
 import { ApiService } from './api.service';
 
-export const ApiServiceModule: ProviderModule = {
+export const ApiServiceModule = new ProviderModule({
   providers: [ApiService],
-};
+});
 ```
 
 - Create an `UserService` which will have access to the `ApiService` by `constructor` injection.
@@ -48,7 +58,7 @@ export const ApiServiceModule: ProviderModule = {
 ```ts
 // ./services/user/user.service.ts
 
-import { Injectable } from 'injection-js';
+import { Injectable } from '@norabytes/reactjs-ioc';
 
 @Injectable()
 export class UserService {
@@ -67,9 +77,9 @@ export class UserService {
 import type { ProviderModule } from '@norabytes/reactjs-ioc';
 import { UserService } from './user.service';
 
-export const UserServiceModule: ProviderModule = {
+export const UserServiceModule = new ProviderModule({
   providers: [UserService],
-};
+});
 ```
 
 - Create an `app.module.ts` file:
@@ -79,13 +89,14 @@ export const UserServiceModule: ProviderModule = {
 
 import type { ProviderModule } from '@norabytes/reactjs-ioc';
 
-// Dependencies
-import { ApiService, UserService } from './services';
+// Modules
+import { ApiServiceModule } from './api';
+import { UserServiceModule } from './user';
 
-export const AppModule: ProviderModule = {
-  // Doing this will automatically resolve and provide the `providers` deps array from both services.
-  modules: [ApiService.ApiServiceModule, UserService.UserServiceModule],
-};
+export const AppModule = new ProviderModule({
+  // By importing these modules, their `providers` will be automatically resolved by the `injector` container.
+  imports: [ApiServiceModule, UserServiceModule],
+});
 ```
 
 You can now inject both the `ApiService` and the `UserService` in your `ReactJS` functional components by doing so:
@@ -98,15 +109,12 @@ You can now inject both the `ApiService` and the `UserService` in your `ReactJS`
 import { Injector, InjectorProvider } from '@norabytes/reactjs-ioc';
 import React from 'react';
 import { AppModule } from './app.module';
-import { Homepage } from './pages/home';
-
-// This injects all the `ProviderModules` into the main container.
-Injector.injectIntoRoot(AppModule);
+import { RootLayout } from './root.layout';
 
 export function App({ children }: { React.ReactElement }) {
   return (
-    <InjectorProvider module={AppModule}>
-      <Homepage>
+    <InjectorProvider injectInto="root" module={AppModule}>
+      <RootLayout>{children}</RootLayout>
     </InjectorProvider>
   );
 }
@@ -114,6 +122,8 @@ export function App({ children }: { React.ReactElement }) {
 
 ```tsx
 // ./pages/home.tsx
+
+// The `Homepage` components is rendered by the `RootLayout` somewhere down the tree.
 
 import { useInject } from '@norabytes/reactjs-ioc';
 import { useEffect } from 'react';
@@ -130,15 +140,123 @@ export function Homepage() {
 
 ### NextJS
 
-If you are using the new `app` folder introduced with `NextJS v13`, then you should be careful to add the `'use client'` directive at the top of the components
-which are going to use the `useInject` hook and the `InjectorProvider` HoComponent.
+#### Client Components
 
-> Be aware that you'll also get this error `'React.createContext' is not a function` when trying to import the `Injector` inside a `ServerComponent`. </br>
-> This happens because the `import { Injector } from '@norabytes/reactjs-ioc'` uses [barrel files](https://basarat.gitbook.io/typescript/main-1/barrel 'barrel files') to `export` from the library. </br>
-> You can avoid this by using `import { Injector } from '@norabytes/reactjs-ioc/dist/src/injector'` instead.
+> If you are using the new `app` folder introduced with `NextJS v13`, then you should be careful to add the `'use client'` directive at the top of the components
+> which are going to use the `useInject` hook and the `InjectorProvider` HoComponent.
 
-### API
+#### Server Components
 
-> Check also the API of the [injection-js](https://www.npmjs.com/package/injection-js 'injection-js') library.
+_FAQs:_
 
-TO-DO: Write docs for the API.
+- **How to have a `root` container for my entire app without using the `'use client'` directive?**
+  - _Instead of using the HoC `InjectorProvider`, you can use the `Injector` API to create a `scoped` container, then use that container to inject directly
+    into your components._
+    > eg:
+    >
+    > ```tsx
+    > // ./app.tsx
+    >
+    > // Be aware that you'll get this error `'React.createContext' is not a function` when trying to import the `Injector` inside a `ServerComponent`
+    > // by using this import statement: `import { Injector } from '@norabytes/reactjs-ioc'`
+    > //
+    > // This happens because the `import { Injector } from '@norabytes/reactjs-ioc'` uses barrel files to export from the library.
+    > //
+    > // You can avoid this by using the follwoing import statement.
+    > import { Injector } from '@norabytes/reactjs-ioc/dist/src/injector';
+    > import React from 'react';
+    > import { AppModule } from './app.module';
+    > import { RootLayout } from './root.layout';
+    >
+    > export const MY_APP_CONTAINER_KEY = 'APP_CONTAINER_KEY';
+    >
+    > Injector.createScopedInjector({
+    >    key: MY_APP_CONTAINER_KEY,
+    >    module: AppModule,
+    >    // If you have already injected some modules into the `root` container and you want to be able to also resolve
+    >    // those dependencies when using this `scoped` container, you must also add the below line.
+    >    fromRootInjector: true
+    > });
+    >
+    > export function App({ children }: { React.ReactElement }) {
+    >   return <RootLayout>{children}</RootLayout>;
+    > }
+    > ```
+    >
+    > ```tsx
+    >
+    > import { Injector } from '@norabytes/reactjs-ioc';
+    > import React from 'react';
+    > import { MY_APP_CONTAINER_KEY } from '...';
+    > import { MyService } from '...';
+    >
+    > export async function MyServerComponent({ children }: { React.ReactElement }) {
+    >   // Now you have access to your service/dependency.
+    >   //
+    >   // N.B: While this would work, it is not the best approach, you should strive to use the `useInject`
+    >   //      hook as it is optimized especially to be used with ReactJS functional components.
+    >   //      Therefore the correct way would be to use the `'use client'` directive at the top of any component
+    >   //      which must have some dependencies injected into it.
+    >   const myService = Injector.getScoped(MY_APP_CONTAINER_KEY, MyService);
+    >
+    >   return <h1>Hello NoraBytes!</h1>;
+    > }
+    > ```
+
+### Unit Tests
+
+Below some examples of how to mock your `dependencies` in your `Unit Tests`
+
+```ts
+// ./my-component/tests/mocks/my-component.service.mock.ts
+
+import { Injectable } from '@norabytes/reactjs-ioc';
+import { MyComponentService, AnotherService } from '...';
+
+@Injectable()
+export class MyComponentServiceMock extends MyComponentService {
+  constructor(private override readonly anotherService: AnotherService) {}
+
+  override realMethod(): void {
+    console.log('The `realMethod` has been mocked!');
+  }
+}
+```
+
+```ts
+// ./my-component/tests/mocks/my-component.module.mock.ts
+
+import { ProviderModule } from '@norabytes/reactjs-ioc';
+import { MyComponentService, MyComponentServiceMock, AnotherService } from '...';
+
+export const MyComponentModuleMock = new ProviderModule({
+  providers: [
+    { provide: MyComponentService, useClass: MyComponentServiceMock },
+    AnotherService
+  ];
+});
+```
+
+```ts
+// ./my-component/tests/mocks/my-component.mock.ts
+
+import { InjectorProvider } from '@norabytes/reactjs-ioc';
+import { MyComponent, MyComponentModuleMock } from '...';
+
+export function MyComponentMock(props: PropsType) {
+  return (
+    <InjectorProvider module={MyComponentModuleMock}>
+      <MyComponent />
+    </InjectorProvider>
+  );
+}
+```
+
+Now you can use the `MyComponentMock` in your `Unit Tests`.
+
+### `Injector` API
+
+> Check also the API of the [injection-js](https://www.npmjs.com/package/injection-js#api 'injection-js') library.
+
+As this library is natively built with `TypeScript`, we encourage you to just check the `IInjectorFactory` interface which can be found
+at `node_modules/@norabytes/reactjs-ioc/dist/src/types/injector/injector-factory.d.ts`

@@ -1,7 +1,13 @@
 import { useContext } from 'react';
-import type { InjectionToken, Type } from 'injection-js';
+import type { InjectorTypes } from '../types';
 import { InjectorContext } from '../injector.context';
 
-export function useInject<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T): T {
+/**
+ * ReactJS `hook` which can be used to `inject` the provided {@link token} into a `component`.
+ *
+ * @param token The {@link DependencyToken}.
+ * @param notFoundValue Optionally you can provide a `default` value which will be used in the case the required `dependency` can't be resolved.
+ */
+export function useInject<T>(token: InjectorTypes.DependencyToken<T>, notFoundValue?: T): T {
   return useContext(InjectorContext).get(token, notFoundValue);
 }
