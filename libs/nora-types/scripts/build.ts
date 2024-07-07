@@ -8,7 +8,3 @@ const distDirPath = path.resolve(rooDirPath, './dist');
 shelljs.rm('-fr', distDirPath);
 shelljs.mkdir(distDirPath);
 shelljs.cp('-r', srcDirPath, distDirPath);
-
-shelljs.cp(path.join(rooDirPath, 'README.md'), distDirPath);
-shelljs.cp(path.join(rooDirPath, 'LICENSE.md'), distDirPath);
-shelljs.cp(path.join(rooDirPath, 'package.json'), distDirPath);
