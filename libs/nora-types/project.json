@@ -1,0 +1,16 @@
+{
+  "name": "nora-types",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/nora-types/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}/libs/nora-types",
+        "command": "npx tsx ./scripts/build.ts"
+      }
+    }
+  }
+}
