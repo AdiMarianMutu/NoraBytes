@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "shelljs": "^0.8.5",
     "tslib": "2.6.3"
   },
   "devDependencies": {
@@ -33,6 +34,7 @@
     "@types/node": "18.16.9",
     "@types/react": "18.3.1",
     "@types/react-dom": "18.3.0",
+    "@types/shelljs": "^0.8.15",
     "@typescript-eslint/eslint-plugin": "^7.3.0",
     "@typescript-eslint/parser": "^7.3.0",
     "babel-jest": "^29.4.1",
@@ -51,7 +53,8 @@
     "react-refresh": "~0.14.0",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
-    "typescript": "~5.4.2",
-    "type-fest": "4.21.0"
+    "tsx": "^4.16.2",
+    "type-fest": "4.21.0",
+    "typescript": "~5.4.2"
   }
 }
