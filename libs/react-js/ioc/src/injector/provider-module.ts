@@ -4,29 +4,29 @@ import type { InjectorTypes } from '../types';
 
 /** Can be used to "bundle" the `dependencies` which you must provide to a {@link ReflectiveInjector | container}. */
 export class ProviderModule implements InjectorTypes.IProviderModule {
-  private readonly imports?: InjectorTypes.IProviderModule[];
-  private readonly providers?: Provider[];
+  private readonly imports: InjectorTypes.IProviderModule[];
+  private readonly providers: Provider[];
+  private readonly exports: Provider[];
 
-  constructor({ imports, providers }: InjectorTypes.ProviderModuleConstructor) {
+  constructor({ imports = [], providers = [], exports = [] }: InjectorTypes.ProviderModuleConstructor) {
     this.imports = imports;
     this.providers = providers;
+    this.exports = exports;
   }
 
   getProviders(): Provider[] {
-    if (!this.hasImports() && !this.hasProviders()) return [];
-
     const importsProviders = this.getProvidersFromImports(this.imports);
-    const providers = this.providers ?? [];
 
-    return [...importsProviders, ...providers];
+    return [...importsProviders, ...this.providers];
   }
 
-  private hasImports(): boolean {
-    return typeof this.imports !== 'undefined' && this.imports.length > 0;
-  }
+  private getExportableProviders({
+    providers = [],
+    exports = [],
+  }: InjectorTypes.ProviderModuleConstructor): Provider[] {
+    if (exports.length === 0) return providers;
 
-  private hasProviders(): boolean {
-    return typeof this.providers !== 'undefined' && this.providers.length > 0;
+    return exports;
   }
 
   private getProvidersFromImports(imports: InjectorTypes.ProviderModuleConstructor['imports']): Provider[][] {
@@ -34,7 +34,7 @@ export class ProviderModule implements InjectorTypes.IProviderModule {
 
     return imports.flatMap((module) => {
       const _module = module as InjectorTypes.ProviderModuleConstructor;
-      const providers = _module.providers ?? [];
+      const providers = this.getExportableProviders(_module);
       const nestedProviders = _module.imports ? this.getProvidersFromImports(_module.imports) : [];
 
       return [providers, ...nestedProviders];

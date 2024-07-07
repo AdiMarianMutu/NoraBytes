@@ -144,6 +144,70 @@ export function Homepage() {
 }
 ```
 
+- Limit which `providers` can be `exported` from a `ProviderModule`.
+
+```ts
+import { Injector, ProviderModule } from '@norabytes/reactjs-ioc';
+import { UserService } from './user.service';
+import { UserDataService } from './user-data.service';
+
+const UserServiceModule = new ProviderModule({
+  providers: [UserService, UserDataService],
+
+  // By default all the listed `providers` are exported.
+  // If you want to control which providers should be exported outside this `ProviderModule`,
+  // you can list them here.
+  //
+  // In this example, when another `ProviderModule` imports the `UserServiceModule`,
+  // it'll only have access to the `UserService`.
+  exports: [UserService],
+});
+
+console.log(UserServiceModule.getProviders());
+// => [UserService, UserDataService]
+
+const GlobalModule = new ProviderModule({
+  imports: [UserServiceModule],
+});
+
+console.log(GlobalModule.getProviders());
+// => [UserService]
+
+const userContainer = Injector.createTransientInjector({ module: UserServiceModule });
+
+console.log(userContainer.get(UserService));
+// => OK
+
+console.log(userContainer.get(UserDataService));
+// => OK
+
+const globalContainer = Injector.createTransientInjector({ module: GlobalModule });
+
+console.log(globalContainer.get(UserService));
+// => OK
+
+console.log(globalContainer.get(UserDataService));
+// => Error: No provider for `UserDataService`.
+```
+
+- Inject `on-the-fly`.
+
+```ts
+import { Injectable, Inject } from '@norabytes/reactjs-ioc';
+import { UserDataService } from './user-data.service';
+
+// N.B: You'll still have to provide a `ProviderModule` to an `injector`.
+
+@Injectable()
+export class UserService {
+  constructor(@Inject(UserDataService) private readonly userDataService: UserDataService) {}
+
+  private applyDataToUser(data: any): void {
+    this.userDataService.applyData(data);
+  }
+}
+```
+
 ### NextJS
 
 #### Client Components
