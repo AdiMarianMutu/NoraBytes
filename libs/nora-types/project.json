@@ -9,7 +9,8 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{workspaceRoot}/libs/nora-types",
-        "command": "npx tsx ./scripts/build.ts"
+        "command": "npx tsx ./scripts/build.ts",
+        "parallel": false
       }
     }
   }
