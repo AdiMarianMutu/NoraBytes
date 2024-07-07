@@ -7,4 +7,4 @@ const distDirPath = path.resolve(rooDirPath, './dist');
 
 shelljs.rm('-fr', distDirPath);
 shelljs.mkdir(distDirPath);
-shelljs.cp('-r', srcDirPath, distDirPath);
+shelljs.cp('-r', `${srcDirPath}/*`, distDirPath);
