@@ -1,6 +1,6 @@
 {
   "name": "@norabytes/nora-types",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "description": "Set of custom generic Types for TypeScript used by the NoraBytes organization.",
   "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/nora-types/README.md",
