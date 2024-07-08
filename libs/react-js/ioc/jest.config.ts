@@ -8,5 +8,5 @@ export default {
     '^.+\\.tsx?$': ['babel-jest', { presets: ['@nx/react/babel'] }],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../coverage/libs/react-js/ioc',
+  coverageDirectory: './coverage',
 };
