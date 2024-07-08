@@ -1,6 +1,6 @@
 {
   "name": "@norabytes/reflexive-store",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "description": "A powerful state management library built-on-top of the RxJS library.",
   "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/reflexive-store/README.md",

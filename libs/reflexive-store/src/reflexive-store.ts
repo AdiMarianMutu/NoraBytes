@@ -6,18 +6,22 @@ import type {
   IReflexiveStore,
   InitStoreConfig,
   StoreContext,
-  StoreMap,
+  StoreMap as StoreMapBase,
   StoreObservable,
   StoreReduceResult,
 } from './types';
 
-export abstract class ReflexiveStore<StoreModel extends Record<string, any>> implements IReflexiveStore<StoreModel> {
-  get store(): StoreMap<StoreModel> {
+export abstract class ReflexiveStore<
+  StoreModel extends Record<string, any>,
+  StoreMap extends StoreMapBase<StoreModel> = StoreMapBase<StoreModel>
+> implements IReflexiveStore<StoreModel>
+{
+  get store(): StoreMap {
     if (!this.storeIsReady) {
       throw new Error(`The ReflexiveStore is inaccessible because you must first invoke the 'initStore' method`);
     }
 
-    return this.internalStore as StoreMap<StoreModel>;
+    return this.internalStore as StoreMap;
   }
 
   get storeIsReady(): boolean {
@@ -33,7 +37,7 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>> imp
 
   protected readonly storeContextBuilder: StoreContextBuilder<StoreModel, this>;
 
-  private internalStore!: StoreMap<StoreModel>;
+  private internalStore!: StoreMap;
   private storeInitializedSubject: BehaviorSubject<boolean>;
   private disposeEventSubject: BehaviorSubject<boolean>;
 

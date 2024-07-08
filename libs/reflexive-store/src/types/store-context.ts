@@ -7,7 +7,7 @@ export type StoreContext<T> = {
   subject: BehaviorSubject<T>;
 
   /**
-   * The low-level RxJS {@link Observable} object.
+   * The low-level `RxJS` {@link Observable} object.
    *
    * _It is a modified {@link Observable} object which automatically appends at the end of the `pipeline` the `takeUntil(store.disposeEvent$)` operator._
    *

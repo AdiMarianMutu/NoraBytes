@@ -1,13 +1,16 @@
 import type { BehaviorSubject, Observable, OperatorFunction } from 'rxjs';
 import type * as NoraTypes from '@norabytes/nora-types';
 import type { RequiredDeep } from 'type-fest';
-import type { StoreMap } from './store-map';
+import type { StoreMap as StoreMapBase } from './store-map';
 import type { StoreContext } from './store-context';
 import type { DetachedValue } from '../utils';
 
-export interface IReflexiveStore<StoreModel extends Record<string, any>> {
+export interface IReflexiveStore<
+  StoreModel extends Record<string, any>,
+  StoreMap extends StoreMapBase<StoreModel> = StoreMapBase<StoreModel>
+> {
   /** Can be used to access the {@link store}. */
-  store: StoreMap<StoreModel>;
+  store: StoreMap;
 
   /**
    * Can be used to `imperatively` check if the store has been initialized.
