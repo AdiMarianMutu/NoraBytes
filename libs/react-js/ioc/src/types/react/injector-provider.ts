@@ -1,5 +1,4 @@
-import type { ReflectiveInjector } from 'injection-js';
-import type { IProviderModule } from '../injector';
+import type { IProviderModule, Container } from '../injector';
 
 export interface InjectorProviderProps {
   children: React.ReactElement | null;
@@ -40,7 +39,7 @@ export interface InjectorProviderProps {
    * </InjectorProvider>
    * ```
    */
-  injectInto?: 'root' | `scoped:${string}` | 'transient' | ReflectiveInjector;
+  injectInto?: 'root' | `scoped:${string}` | 'transient' | Container;
 
   /**
    * Can be used to get access to the component `dependencies` _before_ the component has been rendered _(mounted)_.

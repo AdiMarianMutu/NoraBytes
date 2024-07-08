@@ -33,7 +33,7 @@ export class InjectorFactory implements InjectorTypes.IInjectorFactory {
     key,
     module,
     fromRootInjector = false,
-  }: InjectorTypes.CreateScopedInjectorParams): ReflectiveInjector {
+  }: InjectorTypes.CreateScopedInjectorParams): InjectorTypes.Container {
     if (this.scopedInjectorExists(key)) {
       throw new Error(`The '${key}' Scoped Injector can't be created because it does already exist`);
     }
@@ -51,17 +51,17 @@ export class InjectorFactory implements InjectorTypes.IInjectorFactory {
   createTransientInjector({
     module,
     fromRootInjector = false,
-  }: InjectorTypes.CreateTransientInjectorParams): ReflectiveInjector {
+  }: InjectorTypes.CreateTransientInjectorParams): InjectorTypes.Container {
     const providers = module.getProviders();
 
     return ReflectiveInjector.resolveAndCreate(providers, fromRootInjector ? this.rootInjector : undefined);
   }
 
-  getRootInjector(): ReflectiveInjector {
+  getRootInjector(): InjectorTypes.Container {
     return this.rootInjector;
   }
 
-  getScopedInjector(key: string): ReflectiveInjector | undefined {
+  getScopedInjector(key: string): InjectorTypes.Container | undefined {
     return this._getScopedInjector(key, false);
   }
 
@@ -95,7 +95,7 @@ export class InjectorFactory implements InjectorTypes.IInjectorFactory {
     return this.scopedInjectors.has(key);
   }
 
-  private _getScopedInjector(key: string, throwIfDoesNotExist = true): ReflectiveInjector | undefined {
+  private _getScopedInjector(key: string, throwIfDoesNotExist = true): InjectorTypes.Container | undefined {
     const scopedInjector = this.scopedInjectors.get(key);
 
     if (throwIfDoesNotExist && scopedInjector === undefined) {
