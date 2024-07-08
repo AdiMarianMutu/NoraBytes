@@ -1,0 +1,22 @@
+{
+  "name": "reflexive-store",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/reflexive-store/src",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["!nora-types"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "libs/reflexive-store/dist",
+        "main": "libs/reflexive-store/src/index.ts",
+        "tsConfig": "libs/reflexive-store/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
