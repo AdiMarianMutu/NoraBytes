@@ -5,7 +5,11 @@ import type {
   InitStoreConfig as ReflexiveInitStoreConfig,
   IReflexiveStore,
 } from './types';
-import { DetachedValue as ReflexiveDetachedValue } from './utils';
+import {
+  DetachedValue as ReflexiveDetachedValue,
+  StoreContextBuilder as ReflexiveStoreContextBuilder,
+  storeObservableFactory as reflexiveStoreObservableFactory,
+} from './utils';
 
 export type {
   ReflexiveStoreMap,
@@ -15,4 +19,4 @@ export type {
   IReflexiveStore,
 };
 export * from './reflexive-store';
-export { ReflexiveDetachedValue };
+export { ReflexiveDetachedValue, ReflexiveStoreContextBuilder, reflexiveStoreObservableFactory };
