@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { debounceTime } from 'rxjs';
 import { ComponentMock, Store } from './mocks';
@@ -97,8 +97,6 @@ describe('ReactJS ReflexiveStore', () => {
         />
       )
     );
-
-    let element: HTMLElement;
 
     await act(async () => store.store.more.inputText.setValue((x) => x + 'x'));
     await act(async () => store.store.more.inputText.setValue((x) => x + 'x'));

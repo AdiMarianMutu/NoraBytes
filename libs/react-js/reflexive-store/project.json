@@ -4,7 +4,7 @@
   "sourceRoot": "libs/react-js/reflexive-store/src",
   "projectType": "library",
   "tags": [],
-  "implicitDependencies": ["!nora-types"],
+  "implicitDependencies": ["!nora-types", "!reflexive-store"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
