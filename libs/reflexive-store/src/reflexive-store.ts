@@ -1,8 +1,15 @@
 import { BehaviorSubject, Observable, takeUntil, skip, take, type OperatorFunction } from 'rxjs';
 import type * as NoraTypes from '@norabytes/nora-types';
 import type { RequiredDeep } from 'type-fest';
-import { type StoreContextBuilder, isDetachedValue, storeObservableFactory } from './utils';
-import type { IReflexiveStore, InitStoreConfig, StoreContext, StoreMap, StoreReduceResult } from './types';
+import { StoreContextBuilder, DetachedValue, storeObservableFactory } from './utils';
+import type {
+  IReflexiveStore,
+  InitStoreConfig,
+  StoreContext,
+  StoreMap,
+  StoreObservable,
+  StoreReduceResult,
+} from './types';
 
 export abstract class ReflexiveStore<StoreModel extends Record<string, any>> implements IReflexiveStore<StoreModel> {
   get store(): StoreMap<StoreModel> {
@@ -21,14 +28,18 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>> imp
     return this.disposeEventSubject?.getValue() ?? false;
   }
 
-  storeIsReady$: Observable<boolean>;
-  disposeEvent$: Observable<boolean>;
+  storeIsReady$: StoreObservable<boolean>;
+  disposeEvent$: StoreObservable<boolean>;
 
   protected readonly storeContextBuilder: StoreContextBuilder<StoreModel, this>;
 
   private internalStore!: StoreMap<StoreModel>;
   private storeInitializedSubject: BehaviorSubject<boolean>;
   private disposeEventSubject: BehaviorSubject<boolean>;
+
+  constructor() {
+    this.storeContextBuilder = new StoreContextBuilder();
+  }
 
   initStore(props: RequiredDeep<StoreModel>, config?: InitStoreConfig): this {
     if (this.storeIsReady) return this;
@@ -42,7 +53,9 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>> imp
     return this;
   }
 
-  reduceStore<T extends NoraTypes.Mappers.DotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T> {
+  reduceStore<T extends NoraTypes.Mappers.LeavesDotNotation<StoreModel>[]>(
+    ...ctx: T
+  ): StoreReduceResult<StoreModel, T> {
     return ctx.reduce<StoreContext<StoreModel>[]>((reduceResult, storeModelDotNotationKey) => {
       const storeCtx = storeModelDotNotationKey.split('.').reduce((a, b) => a[b], this.store as any);
 
@@ -54,7 +67,7 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>> imp
   storeContextFactory<T>(value: T, ...pipe: OperatorFunction<T, T>[]): StoreContext<T>;
   storeContextFactory<T>(value: T, ...pipe: OperatorFunction<T, T>[]): StoreContext<T> {
     const extendsMainPipe = pipe !== undefined && pipe.length > 0;
-    const storeContext = this.storeContextBuilder.build(value, this);
+    const storeContext = this.storeContextBuilder.build('<store-context-factory>', value, this);
 
     if (extendsMainPipe) {
       storeContext.value$ = storeObservableFactory(storeContext.subject, this.disposeEvent$, ...pipe);
@@ -87,7 +100,7 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>> imp
 
     for (const [pKey, pValue] of Object.entries(currentNode)) {
       const isNestedKvpObject =
-        typeof pValue === 'object' && !Array.isArray(pValue) && !isDetachedValue(pValue) && pValue !== null;
+        typeof pValue === 'object' && !Array.isArray(pValue) && !(pValue instanceof DetachedValue) && pValue !== null;
 
       // The current node has nested nodes, we process them too
       if (isNestedKvpObject && Object.keys(pValue as any).length > 0) {
@@ -115,7 +128,7 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>> imp
     this.storeInitializedSubject = new BehaviorSubject(false);
     this.disposeEventSubject = config?.disposeEventSubject ?? new BehaviorSubject(false);
     this.disposeEvent$ = this.disposeEventSubject.asObservable().pipe(skip(1), take(1));
-    this.storeIsReady$ = this.storeInitializedSubject.asObservable().pipe(takeUntil(this.disposeEvent$));
+    this.storeIsReady$ = storeObservableFactory(this.storeInitializedSubject, this.disposeEvent$);
 
     this.buildStoreContext(props);
     this.onStoreInit();
@@ -124,8 +137,8 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>> imp
   }
 
   private buildStoreContext(props: RequiredDeep<StoreModel>): void {
-    this.internalStore = this.iterateStoreModel(props as any, (_, value) => {
-      return this.storeContextBuilder.build(value, this);
+    this.internalStore = this.iterateStoreModel(props as any, (key, value) => {
+      return this.storeContextBuilder.build(key, value, this);
     });
   }
 }

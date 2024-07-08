@@ -1,15 +1,18 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, skip, tap } from 'rxjs';
 import type { ReflexiveStore } from '../reflexive-store';
-import type { SetValueCallbackParam, StoreContext } from '../types';
-import { isDetachedValue } from './is-detached-value';
+import type { StoreContext, SetValueCallbackParam, OnChangeCallbackParam, OnChangeWithPipeParams } from '../types';
+import { DetachedValue } from './detached-value';
+import { isFunction, isClassInstance } from '../helpers';
 import { storeObservableFactory } from './store-observable-factory';
 
 export class StoreContextBuilder<
   StoreModel extends Record<string, any>,
   ReflexiveStoreInstance extends ReflexiveStore<StoreModel>
 > {
-  build<T>(value: T, storeInstance: ReflexiveStoreInstance): StoreContext<T> {
-    if (typeof value === 'function') return value as any;
+  build<T>(key: string, value: T, storeInstance: ReflexiveStoreInstance): StoreContext<T> {
+    if (this.valueShouldBeDetached(value)) {
+      throw new Error(`The '${key}' property value must be initialized with the 'ReflexiveStore.detachValue' method!`);
+    }
 
     const subject = new BehaviorSubject<T>(value);
     const value$ = storeObservableFactory(subject, storeInstance.disposeEvent$);
@@ -18,13 +21,32 @@ export class StoreContextBuilder<
       return this.getReflexiveOrDetachedValue(subject.getValue());
     };
 
-    const setValue = (value: T | SetValueCallbackParam<T>): T => {
+    const setValue = (value: T | SetValueCallbackParam<T> | DetachedValue<(...a: any[]) => any>): T => {
+      const detachedValueProvided = value instanceof DetachedValue;
       const callbackProvided = typeof value === 'function';
-      const newValue = callbackProvided ? (value as SetValueCallbackParam<T>)(getValue()) : value;
+      let newValue: T;
+
+      if (!detachedValueProvided && callbackProvided) {
+        const cb = value as SetValueCallbackParam<T>;
+        newValue = cb(getValue());
+      } else {
+        newValue = this.getReflexiveOrDetachedValue(value) as T;
+      }
 
       subject.next(newValue);
 
       return getValue();
+    };
+
+    const onChange = (params: OnChangeCallbackParam<T> | OnChangeWithPipeParams<T>): void => {
+      if (!this.onChangeParamsHasPipeAttached(params)) {
+        value$.pipe(skip(1), tap(params)).subscribe();
+
+        return;
+      }
+
+      //@ts-expect-error Signature not matching.
+      value$.pipe(skip(1), ...params.with, tap(params.do)).subscribe();
     };
 
     return {
@@ -32,12 +54,25 @@ export class StoreContextBuilder<
       value$,
       getValue,
       setValue,
+      onChange,
     } as StoreContext<T>;
   }
 
+  protected valueShouldBeDetached<T>(value: T): boolean {
+    return typeof value === 'undefined' || isFunction(value) || isClassInstance(value);
+  }
+
   protected getReflexiveOrDetachedValue<T>(value: T): T {
-    if (isDetachedValue(value)) return value.value as T;
+    if (value instanceof DetachedValue) return value.value as T;
 
     return value;
+  }
+
+  protected onChangeParamsHasPipeAttached<T>(obj: any): obj is OnChangeWithPipeParams<T> {
+    try {
+      return 'with' in obj;
+    } catch {
+      return false;
+    }
   }
 }

@@ -1,6 +1,6 @@
 import type { Primitive, RequiredDeep } from 'type-fest';
 import type { StoreContext } from './store-context';
-import type { DetachedValue } from './detached-value';
+import type { DetachedValue } from '../utils';
 
 export type StoreMap<T> = RequiredDeep<_StoreMap<T>>;
 
@@ -24,86 +24,3 @@ type _StoreMap<StoreModel> = {
 }
 
 type DetachedValueWrapperRequired = 'USE_THE_DETACHED_VALUE_WRAPPER';
-
-// const a = {} as StoreMap<StoreModelMockup>;
-
-// // Mockup StoreModel used to test the `StoreMap` generic type.
-// interface StoreModelMockup {
-//   string: string;
-//   primitives: _Primitives;
-//   arrays: _Arrays;
-//   compelx: {
-//     methods: _Methods;
-//     classes: _Classes;
-//     union: {
-//       string: 'A' | 'B' | 'C';
-//       bool: true | false;
-//       mixed: number | string | string[];
-//     };
-//   };
-//   record: {
-//     _invalid: {
-//       undefined: undefined;
-//       void: void;
-//       undefinedOpt?: undefined;
-//       voidOpt?: void;
-//     };
-//     string: string;
-//     stringOpt?: string;
-//     detachedValue: DetachedValue<_Primitives>;
-//   };
-// }
-// interface _Primitives {
-//   string: string | undefined;
-//   number: number;
-//   bigInt: bigint;
-//   bool: boolean;
-//   symbol: symbol;
-//   _opt: {
-//     string?: string;
-//     number?: number;
-//     bigInt?: bigint;
-//     bool?: boolean;
-//     symbol?: symbol;
-//   };
-// }
-// interface _Arrays {
-//   string: string[];
-//   number: number[];
-//   bigInt: bigint[];
-//   bool: boolean[];
-//   symbol: symbol[];
-//   _opt: {
-//     string?: string[];
-//     number?: number[];
-//     bigInt?: bigint[];
-//     bool?: boolean[];
-//     symbol?: symbol[];
-//   };
-// }
-// interface _Methods {
-//   _invalids: {
-//     void: () => void;
-//     string: () => string;
-//     wParams: (key: string, value: any) => { key: string; value: any };
-//     wGenericParams: <T>(value: T) => T;
-//     wGenericParamsAsync: <T>(value: T) => Promise<T>;
-//     voidOpt?: () => void;
-//     stringOpt?: () => string;
-//     wParamsOpt?: (key: string, value: any) => { key: string; value: any };
-//     wGenericParamsOpt?: <T>(value: T) => T;
-//   };
-//   void: DetachedValue<() => void>;
-//   wGenericParams: DetachedValue<<T>(value: T) => T>;
-//   wGenericParamsAsync: DetachedValue<<T>(value: T) => Promise<T>>;
-//   voidOpt?: DetachedValue<() => void>;
-//   wGenericParamsOpt?: DetachedValue<<T>(value: T) => T>;
-// }
-// interface _Classes {
-//   invalid: _Class;
-//   valid: DetachedValue<_Class>;
-// }
-// class _Class {
-//   name: string;
-//   age?: number;
-// }

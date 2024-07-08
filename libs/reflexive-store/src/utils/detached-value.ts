@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { StoreContext } from './store-context';
-
 /**
  * If you are storing a property which its value is of type {@link Record} _(or a `function`, `class` and so on)_
  * and you don't want/need to have each property transformed to a {@link StoreContext},
@@ -16,21 +13,17 @@ import type { StoreContext } from './store-context';
  * interface ReactiveObject extends StaticObject {}
  *
  * interface StoreModel {
- *  staticObject: StaticValue<StaticObject>;
+ *  staticObject: ReflexiveDetachedValue<StaticObject>;
  *  reactiveObject: ReactiveObject;
  * }
  *
  * ...
  *
  * const $ = initStore({
- *  staticObject: {
- *    // The `__detached: true` property is required for the ReflexiveStore in order to correctly understand that the `staticObject` prop must be treated as a `DetachedValue`.
- *    __detached: true,
- *    value: {
- *      prop0: 'Hello',
- *      prop1: 'NoraBytes',
- *    }
- *  },
+ *  staticObject: new ReflexiveDetachedValue({
+ *    prop0: 'Hello',
+ *    prop1: 'NoraBytes',
+ *  }),
  *  reactiveObject: {
  *    prop0: 'Hello',
  *    prop1: 'NoraBytes',
@@ -50,10 +43,6 @@ import type { StoreContext } from './store-context';
  * // The `store.reactiveObject` has all its children transformed into a `StoreContext`.
  * ```
  */
-export interface DetachedValue<T> {
-  /** Must always be set to `true`. */
-  __detached: true;
-
-  /** The {@link value} you want to detach from the `StoreContext` mapping process. */
-  value: T;
+export class DetachedValue<T> {
+  constructor(public readonly value: T) {}
 }

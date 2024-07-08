@@ -15,6 +15,17 @@
         "tsConfig": "libs/reflexive-store/tsconfig.lib.json"
       }
     },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/{projectRoot}/coverage"],
+      "options": {
+        "jestConfig": "libs/reflexive-store/jest.config.ts"
+      },
+      "lint": {
+        "executor": "@nx/eslint:lint",
+        "outputs": ["{options.outputFile}"]
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint"
     }

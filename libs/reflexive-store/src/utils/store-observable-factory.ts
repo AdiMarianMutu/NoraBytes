@@ -1,11 +1,11 @@
-import { Observable, takeUntil, type OperatorFunction, type Subject } from 'rxjs';
-import type { ReflexiveStoreObservable } from '../types';
+import { takeUntil, type OperatorFunction, type Subject } from 'rxjs';
+import type { IReflexiveStore, StoreObservable } from '../types';
 
 export function storeObservableFactory<T>(
   valueSubject: Subject<T>,
-  disposeEvent$: Observable<boolean>,
+  disposeEvent$: IReflexiveStore<T>['disposeEvent$'],
   ...pipeInitialExtension: OperatorFunction<T, T>[]
-): ReflexiveStoreObservable<T> {
+): StoreObservable<T> {
   const original$ = valueSubject.asObservable();
   const extended$ = valueSubject.asObservable();
 

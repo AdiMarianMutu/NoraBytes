@@ -14,7 +14,7 @@ or
 
 #### How it works
 
-The `ReflexiveStore` is built on top of the [RxJS](https://rxjs.dev/ 'RxJS') library, this means that you can create very complexe responsive flows by laveraging the `RxJS` `pipe` and its `operators`.
+The `ReflexiveStore` is built on top of the [RxJS](https://rxjs.dev/ 'RxJS') library, this means that you can create very complexe responsive flows by leveraging the `RxJS` `pipe` and its `operators`.
 
 > Before diving into how to use the `ReflexiveStore`, it is important to understand its _core_ features.
 
@@ -23,12 +23,13 @@ The `ReflexiveStore` is built on top of the [RxJS](https://rxjs.dev/ 'RxJS') lib
 The core of the `ReflexiveStore` is the `StoreContext`. It is the `object` which you'll use the most because each `property` declared in the `StoreModel` it'll be wrapped into a `StoreContext` which exposes the `methods` and `properties`
 you can use to interact with the property.
 
-There are _2 methods_ and _2 properties_.
+There are _3 methods_ and _2 properties_.
 
 - **[PROPERTY] `subject`** - Is the low-level `RxJS` [BehaviorSubject](https://www.learnrxjs.io/learn-rxjs/subjects/behaviorsubject 'BehaviorSubject'), this means that all the values from your
   store are actually `BehaviorSubject`.
 - **[PROPERTY] `value$`** - Is the low-level `RxJS` [Observable](https://www.learnrxjs.io/learn-rxjs/operators/creation/of 'Observable'), this means that you can `subscribe` to any value from your store and be `notified` when the value has changed.
-- **[METHOD] `setValue`** - Can be used to `update` in real-time the `value` of any property from the store, it accepts either the new `payload` (the value) or a `callback` method having this signature `(currentValue) => newValue`.
+- **[METHOD] `setValue` _(3 overloads)_** - Can be used to `update` in real-time the `value` of any property from the store, it accepts either the new `payload` (the value) or a `callback` method having this signature `(currentValue) => newValue`.
+- **[METHOD] `onChange` _(2 overloads)_** - Can be used to `register` a `callback` method which will be invoked whenever the `value` changes.
 - **[METHOD] `getValue`** - Can be used to `imperatively` retrieve the value of any property from the store. _(This is not the best approach in the reactive world of RxJS)_
 
 > Now that we know that all of our store properties are just a bunch of `StoreContext` objects, we can move forward with some examples.
@@ -47,13 +48,13 @@ Start by creating a `StoreModel` interface:
 ```ts
 // ./contact-us-form/store.model.ts
 
-import type { Types } from '@norabytes/reflexive-store';
+import type { ReflexiveDetachedValue } from '@norabytes/reflexive-store';
 
 export interface ContactUsFormStoreModel {
   firstName: string;
   middleName: string | undefined;
   lastName: string;
-  dob: Types.DetachedValue<{
+  dob: ReflexiveDetachedValue<{
     day: number;
     month: number;
     year: number;
@@ -61,7 +62,7 @@ export interface ContactUsFormStoreModel {
   info: {
     primary: string;
     secondary: string;
-    additional: Types.DetachedValue<Record<string, string>>;
+    additional: ReflexiveDetachedValue<Record<string, string>>;
     extra: {
       marriage: {
         isMarried: boolean;
@@ -73,7 +74,7 @@ export interface ContactUsFormStoreModel {
       };
     };
   };
-  storedFunction: Types.DetachedValue<() => void>;
+  storedFunction: ReflexiveDetachedValue<() => void>;
 }
 ```
 
@@ -176,19 +177,36 @@ Basically, you should use the `DetachedValue` type in your `StoreModel` in the f
 ```ts
 // store.model.ts
 
+import type { ReflexiveDetachedValue } from '@norabytes/reflexive-store';
+
 export interface StoreModel {
   counter: number;
+  userData: ReflexiveDetachedValue<{
+    firstName: string;
+    lastName: string;
+  }>;
 }
 
 // store.ts
 
 import { ReflexiveStore } from '@norabytes/reflexive-store';
-import { tap } from 'rxjs';
 
-export class Store extends ReflexiveStore<StoreModel> {}
+export class Store extends ReflexiveStore<StoreModel> {
+  // However you can skip overriding the internal `onStoreInit` method.
+  protected override onStoreInit(): void {
+    console.log(`The 'AppStore' has been successfully initialized.`);
+  }
+
+  // However you can skip overriding the internal `onDispose` method.
+  protected override onDispose(): void {
+    console.log(`The 'AppStore' is being disposed.`);
+  }
+}
 
 // app.ts
 
+import { ReflexiveStore, ReflexiveDetachedValue } from '@norabytes/reflexive-store';
+import { debounceTime } from 'rxjs';
 import { Store } from './store';
 
 class App {
@@ -201,9 +219,14 @@ class App {
   onInit(): void {
     this.store.initStore({
       count: 0,
+      userData: new ReflexiveDetachedValue({
+          firstName: '',
+          lastName: '',
+        })
     });
 
-    this.subscribeToCounter();
+    this.subscribeToCounterChanges();
+    this.subscribeToUserDataChanges();
   }
 
   onAppDispose(): void {
@@ -214,14 +237,26 @@ class App {
     this.appStore.store.count.setValue((p) => p + 1);
   }
 
-  private subscribeToCounter(): void {
-    // No need to manually unsubscribe
-    // as all the store subscription will be automatically unsubscribed
-    // when `this.appStore.dispose()` is invoked.
+  updateUserData(firstName: string, lastName: string): void {
+    this.appStore.store.userData.setValue({
+      firstName,
+      lastName,
+    });
+  }
 
-    this.appStore.store.count.value$.pipe(tap((counterValue) => {
+  private subscribeToCounterChanges(): void {
+    this.appStore.store.counter.onChange((counterValue) => {
       console.log('Counter is now at', counterValue);
-    })).subscribe();
+    });
+  }
+
+  private subscribeToUserDataChanges(): void {
+    this.appStore.store.userData.onChange({
+      with: [debounceTime(250)],
+      do: (newUserData) => {
+        this.fictionalApiService.updateUserData(newUserData);
+      }
+    });
   }
 }
 

@@ -3,7 +3,7 @@ import type * as NoraTypes from '@norabytes/nora-types';
 import type { RequiredDeep } from 'type-fest';
 import type { StoreMap } from './store-map';
 import type { StoreContext } from './store-context';
-import type { DetachedValue } from './detached-value';
+import type { DetachedValue } from '../utils';
 
 export interface IReflexiveStore<StoreModel extends Record<string, any>> {
   /** Can be used to access the {@link store}. */
@@ -67,7 +67,7 @@ export interface IReflexiveStore<StoreModel extends Record<string, any>> {
    * console.log(firstName.getValue(), lastName.getValue(), dobDay.getValue(), dobMonth.getValue(), dobYear.getValue());
    * ```
    */
-  reduceStore<T extends NoraTypes.Mappers.DotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T>;
+  reduceStore<T extends NoraTypes.Mappers.LeavesDotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T>;
 
   /**
    * Factory `method` which can be used to generate a new {@link StoreContext} property on demand.
