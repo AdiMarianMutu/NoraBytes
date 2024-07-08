@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "skipLibCheck": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["jest.config.ts", "src/tests"]
+}

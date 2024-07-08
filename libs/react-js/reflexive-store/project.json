@@ -1,0 +1,33 @@
+{
+  "name": "reactjs-reflexive-store",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/react-js/reflexive-store/src",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["!nora-types"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "libs/react-js/reflexive-store/dist",
+        "main": "libs/react-js/reflexive-store/src/index.ts",
+        "tsConfig": "libs/react-js/reflexive-store/tsconfig.lib.json"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/{projectRoot}/coverage"],
+      "options": {
+        "jestConfig": "libs/react-js/reflexive-store/jest.config.ts"
+      },
+      "lint": {
+        "executor": "@nx/eslint:lint",
+        "outputs": ["{options.outputFile}"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
