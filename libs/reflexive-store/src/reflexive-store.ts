@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, takeUntil, skip, take, type OperatorFunction } from 'rxjs';
+import { BehaviorSubject, skip, take, type OperatorFunction } from 'rxjs';
 import type * as NoraTypes from '@norabytes/nora-types';
 import type { RequiredDeep } from 'type-fest';
 import { StoreContextBuilder, DetachedValue, storeObservableFactory } from './utils';
@@ -56,6 +56,7 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>> imp
   reduceStore<T extends NoraTypes.Mappers.LeavesDotNotation<StoreModel>[]>(
     ...ctx: T
   ): StoreReduceResult<StoreModel, T> {
+    //@ts-ignore
     return ctx.reduce<StoreContext<StoreModel>[]>((reduceResult, storeModelDotNotationKey) => {
       const storeCtx = storeModelDotNotationKey.split('.').reduce((a, b) => a[b], this.store as any);
 
