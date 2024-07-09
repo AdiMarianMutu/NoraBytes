@@ -1,1 +1,1 @@
-export { Inject, Injectable } from 'injection-js';
+export { Inject, Injectable, Host, Optional, Self, SkipSelf } from 'injection-js';

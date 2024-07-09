@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { propsWithoutChildren } from './helpers';
-import type { InjectorReactTypes } from '../types';
+import type { InjectorProviderProps } from '../types';
 import { InjectorContext } from './injector.context';
 import { useInjectInternal } from './hooks/helpers';
 
@@ -20,12 +20,7 @@ import { useInjectInternal } from './hooks/helpers';
  * </InjectorProvider>
  * ```
  */
-export function InjectorProvider({
-  module,
-  children,
-  injectInto = 'transient',
-  preInjection,
-}: InjectorReactTypes.InjectorProviderProps) {
+export function InjectorProvider({ module, children, injectInto = 'transient', preInjection }: InjectorProviderProps) {
   const contextInjector = useInjectInternal({ module, injectInto });
   const childrenProps = propsWithoutChildren(children?.props);
 

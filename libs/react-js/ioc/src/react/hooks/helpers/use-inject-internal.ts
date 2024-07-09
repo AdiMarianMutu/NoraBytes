@@ -1,6 +1,6 @@
 import { type ReflectiveInjector, Injector as InjectorJs } from 'injection-js';
 import { useContext } from 'react';
-import type { InjectorReactTypes } from '../../../types';
+import type { InjectorProviderProps } from '../../../types';
 import { Injector } from '../../../injector';
 import { InjectorContext } from '../../injector.context';
 import { useOnce } from './use-once';
@@ -8,7 +8,7 @@ import { useOnce } from './use-once';
 export function useInjectInternal({
   module,
   injectInto = 'transient',
-}: Pick<InjectorReactTypes.InjectorProviderProps, 'module' | 'injectInto'>) {
+}: Pick<InjectorProviderProps, 'module' | 'injectInto'>) {
   const injectorContainer = useContext(InjectorContext) as ReflectiveInjector;
 
   const contextInjector = useOnce(() => {

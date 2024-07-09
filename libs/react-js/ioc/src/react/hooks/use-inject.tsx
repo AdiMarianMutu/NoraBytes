@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import type { InjectorTypes } from '../../types';
+import type { DependencyToken } from '../../types';
 import { InjectorContext } from '../injector.context';
 
 /**
@@ -8,6 +8,6 @@ import { InjectorContext } from '../injector.context';
  * @param token The {@link DependencyToken}.
  * @param notFoundValue Optionally you can provide a `default` value which will be used in the case the required `dependency` can't be resolved.
  */
-export function useInject<T>(token: InjectorTypes.DependencyToken<T>, notFoundValue?: T): T {
+export function useInject<T>(token: DependencyToken<T>, notFoundValue?: T): T {
   return useContext(InjectorContext).get(token, notFoundValue);
 }

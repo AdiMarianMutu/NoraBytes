@@ -1,4 +1,9 @@
-export type { DependencyToken } from './types/injector';
-export type { InjectorProviderProps } from './types/react';
+export type {
+  IInjectorFactory,
+  InjectorContainer,
+  IProviderModule,
+  DependencyToken,
+  InjectorProviderProps,
+} from './types';
 export * from './decorators';
 export { Injector, ProviderModule } from './injector';
