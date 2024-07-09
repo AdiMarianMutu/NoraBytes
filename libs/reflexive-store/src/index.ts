@@ -3,6 +3,7 @@ import type {
   StoreContext as ReflexiveStoreContext,
   StoreObservable as ReflexiveStoreObservable,
   InitStoreConfig as ReflexiveInitStoreConfig,
+  StoreReduceResult as ReflexiveStoreReduceResult,
   IReflexiveStore,
 } from './types';
 import {
@@ -16,6 +17,7 @@ export type {
   ReflexiveStoreContext,
   ReflexiveStoreObservable,
   ReflexiveInitStoreConfig,
+  ReflexiveStoreReduceResult,
   IReflexiveStore,
 };
 export * from './reflexive-store';
