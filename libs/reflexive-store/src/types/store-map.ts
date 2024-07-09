@@ -1,11 +1,9 @@
-import type { Primitive, RequiredDeep } from 'type-fest';
+import type { Primitive } from 'type-fest';
 import type { StoreContext } from './store-context';
 import type { DetachedValue } from '../utils';
 
-export type StoreMap<T> = RequiredDeep<RecursiveStoreMap<T>>;
-
 // prettier-ignore
-type RecursiveStoreMap<StoreModel> = {
+export type StoreMap<StoreModel> = {
   [K in keyof StoreModel]:
 
   // Types which must be wrapped with the `DetachedValue` type.
@@ -20,7 +18,7 @@ type RecursiveStoreMap<StoreModel> = {
   StoreModel[K] extends Primitive | Array<any> ? StoreContext<StoreModel[K]> :
 
   // Recursively keep mapping the `StoreModel`.
-  RecursiveStoreMap<StoreModel[K]>;
+  StoreMap<StoreModel[K]>;
 }
 
 type DetachedValueWrapperRequired = 'USE_THE_DETACHED_VALUE_WRAPPER';
