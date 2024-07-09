@@ -1,4 +1,4 @@
-import { BehaviorSubject, skip, take, type OperatorFunction } from 'rxjs';
+import { BehaviorSubject, first, skip, take, type OperatorFunction } from 'rxjs';
 import type { RequiredDeep } from 'type-fest';
 import { StoreContextBuilder, DetachedValue, storeObservableFactory } from './utils';
 import type {
@@ -133,7 +133,7 @@ export abstract class ReflexiveStore<
     this.storeIsReady$ = storeObservableFactory(this.storeInitializedSubject, this.disposeEvent$);
 
     this.buildStoreContext(props);
-    this.onStoreInit();
+    this.subscribeToStoreIsReady();
 
     this.storeInitializedSubject.next(true);
   }
@@ -141,6 +141,12 @@ export abstract class ReflexiveStore<
   private buildStoreContext(props: RequiredDeep<StoreModel>): void {
     this.internalStore = this.iterateStoreModel(props as any, (key, value) => {
       return this.storeContextBuilder.build(key, value, this);
+    });
+  }
+
+  private subscribeToStoreIsReady(): void {
+    this.storeIsReady$.pipe(first((isReady) => isReady)).subscribe(() => {
+      this.onStoreInit();
     });
   }
 }
