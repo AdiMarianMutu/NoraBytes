@@ -1,6 +1,5 @@
-import type { Injector, ReflectiveInjector } from 'injection-js';
 import type * as AdvancedTypes from 'type-fest';
-import type { IProviderModule, DependencyToken } from '../../types';
+import type { IProviderModule, DependencyToken, InjectorContainer } from '../../types';
 
 export interface IInjectorFactory {
   /** Inject the provided {@link IProviderModule | ProviderModule} into the `root` {@link InjectorContainer}. */
@@ -89,5 +88,3 @@ export interface CreateScopedInjectorParams extends AdvancedTypes.SetOptional<Cr
   /** The unique {@link key} of this `scoped` InjectorContainer.  */
   key: string;
 }
-
-export type InjectorContainer = ReflectiveInjector & Injector;

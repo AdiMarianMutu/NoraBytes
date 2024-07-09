@@ -1,4 +1,4 @@
-import type { InjectionToken, Provider, Type } from 'injection-js';
+import type { Provider } from 'injection-js';
 
 export interface IProviderModule {
   /** Returns all the {@link Provider | Providers} included into this `module`. */
@@ -19,5 +19,3 @@ export interface ProviderModuleConstructor {
    */
   exports?: Provider[];
 }
-
-export type DependencyToken<T> = Type<T> | InjectionToken<T>;
