@@ -38,7 +38,8 @@ export type ToDotNotation<T, LeavesOnly extends boolean = false> = LeavesOnly ex
 
 type PathsLeaves<T> = T extends object
   ? {
-      [K in keyof T]-?: Join<K, PathsLeaves<T[K]>>;
+      [K in keyof T]-?: T[K] extends any[] ? keyof T : Join<K, PathsLeaves<T[K]>>;
     }[keyof T]
   : '';
+
 type Join<K, P> = K extends string ? (P extends string ? `${K}${'' extends P ? '' : '.'}${P}` : never) : never;
