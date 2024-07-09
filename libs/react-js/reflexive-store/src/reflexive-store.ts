@@ -1,5 +1,8 @@
-import { ReflexiveStore as ReflexiveStoreBase, type ReflexiveStoreMap } from '@norabytes/reflexive-store';
-import type * as NoraTypes from '@norabytes/nora-types';
+import {
+  ReflexiveStore as ReflexiveStoreBase,
+  type ReflexiveStoreMap,
+  type ReflexiveStoreToDotNotation,
+} from '@norabytes/reflexive-store';
 import type { Observable } from 'rxjs';
 import type { RequiredDeep } from 'type-fest';
 import { useContext, useMemo } from 'react';
@@ -69,9 +72,7 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>>
     return this;
   }
 
-  useReduceStore<T extends NoraTypes.Mappers.LeavesDotNotation<StoreModel>[]>(
-    ...ctx: T
-  ): StoreReduceResult<StoreModel, T> {
+  useReduceStore<T extends ReflexiveStoreToDotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T> {
     const storeContexts = super.reduceStore(...ctx);
 
     return storeContexts.map((ctx) => (ctx as StoreContext<any>).useValue()) as StoreReduceResult<StoreModel, T>;

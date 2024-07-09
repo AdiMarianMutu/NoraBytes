@@ -3,6 +3,7 @@ import type {
   ReflexiveInitStoreConfig,
   ReflexiveDetachedValue,
   ReflexiveStoreMap,
+  ReflexiveStoreToDotNotation,
 } from '@norabytes/reflexive-store';
 import type * as NoraTypes from '@norabytes/nora-types';
 import type { RequiredDeep } from 'type-fest';
@@ -41,9 +42,7 @@ export interface IReflexiveStore<StoreModel extends Record<string, any>>
    * console.log(firstName, lastName, dobDay, dobMonth, dobYear);
    * ```
    */
-  useReduceStore<T extends NoraTypes.Mappers.LeavesDotNotation<StoreModel>[]>(
-    ...ctx: T
-  ): StoreReduceResult<StoreModel, T>;
+  useReduceStore<T extends ReflexiveStoreToDotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T>;
 
   /**
    * {@link React} `hook` which will be invoked when the _internal_ `disposeEvent$` observable emits.
