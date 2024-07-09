@@ -1,5 +1,9 @@
+import { Schema } from 'type-fest';
+
 /**
  * Deeply overrides the `values` of {@link T}'s keys with {@link U}'s keys and values.
+ *
+ * _This is a `wrapper` of the {@link Schema | TypeFest.Schema} type._
  *
  * eg:
  *
@@ -41,6 +45,4 @@
  * }
  * ```
  */
-export type DeepOverride<T, U> = {
-  [P in keyof T]: T[P] extends object ? DeepOverride<T[P], U> : U;
-};
+export type DeepOverride<T, U> = Schema<T, U>;
