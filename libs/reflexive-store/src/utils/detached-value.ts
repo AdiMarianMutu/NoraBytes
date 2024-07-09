@@ -44,5 +44,13 @@
  * ```
  */
 export class DetachedValue<T> {
-  constructor(public readonly value: T) {}
+  private readonly __reflexiveStoreDetachedValue: T;
+
+  constructor(value: T) {
+    this.__reflexiveStoreDetachedValue = value;
+  }
+
+  getValue(): T {
+    return this.__reflexiveStoreDetachedValue;
+  }
 }

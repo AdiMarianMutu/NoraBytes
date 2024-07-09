@@ -63,7 +63,7 @@ export class StoreContextBuilder<
   }
 
   protected getReflexiveOrDetachedValue<T>(value: T): T {
-    if (value instanceof DetachedValue) return value.value as T;
+    if (value instanceof DetachedValue) return value.getValue();
 
     return value;
   }
