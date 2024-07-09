@@ -9,32 +9,33 @@ export interface InjectorProviderProps {
   /**
    * Optionally you can control where the provided {@link IProviderModule | ProviderModule} should be injected into.
    *
-   * - `'root'`: It'll be injected into the root {@link ReflectiveInjector | InjectorContainer}.
+   * - `'root'`: It'll be injected into the root {@link InjectorContainer}.
    *           _This means that components up the tree could also inject the provided {@link IProviderModule | ProviderModule}._
-   * - `scoped:KEY`: It'll be injected into the `scoped` {@link ReflectiveInjector | InjectorContainer} having the provided {@link key}.
-   * - `'transient'`: It'll be injected into a new {@link ReflectiveInjector | InjectorContainer} which will be available only
+   * - `scoped:KEY`: It'll be injected into the `scoped` {@link InjectorContainer} having the provided {@link key}.
+   * - `'transient'`: It'll be injected into a new {@link InjectorContainer} which will be available only
    *                to the provided {@link children}.
-   * - `ReflectiveInjector`: You can directly provide a {@link ReflectiveInjector | InjectorContainer} instance.
+   * - `InjectorContainer`: You can directly provide a {@link InjectorContainer} instance.
    *
    * Defaults to `'transient'`.
    *
    * eg:
    * ```tsx
-   * import { InjectorProvider } from '@norabytes/reactjs-ioc';
+   * import { EMPTY_PROVIDER_MODULE } from '@norabytes/reactjs-ioc';
+   * import { InjectorProvider } from '@norabytes/reactjs-ioc/r';
    *
-   * <InjectorProvider injectInto="root" module={MyProviderModule}>
+   * <InjectorProvider injectInto="root" module={EMPTY_PROVIDER_MODULE}>
    *  <MyComponent />
    * </InjectorProvider>
    *
-   * <InjectorProvider injectInto="transient" module={MyProviderModule}>
+   * <InjectorProvider injectInto="transient" module={EMPTY_PROVIDER_MODULE}>
    *  <MyComponent />
    * </InjectorProvider>
    *
-   * <InjectorProvider injectInto="scoped:MY_SCOPED_InjectorContainer_KEY" module={MyProviderModule}>
+   * <InjectorProvider injectInto="scoped:MY_SCOPED_InjectorContainer_KEY" module={EMPTY_PROVIDER_MODULE}>
    *  <MyComponent />
    * </InjectorProvider>
    *
-   * <InjectorProvider injectInto={myCustomReflectiveInjectorContainerInstance} module={MyProviderModule}>
+   * <InjectorProvider injectInto={myCustomReflectiveInjectorContainerInstance} module={EMPTY_PROVIDER_MODULE}>
    *  <MyComponent />
    * </InjectorProvider>
    * ```
@@ -46,7 +47,7 @@ export interface InjectorProviderProps {
    *
    * eg:
    * ```tsx
-   * import { InjectorProvider, useInject } from '@norabytes/reactjs-ioc';
+   * import { InjectorProvider, useInject } from '@norabytes/reactjs-ioc/r';
    *
    * <InjectorProvider module={MyProviderModule} preInjection={() => {
    *  const myService = useInject(MyService);

@@ -10,7 +10,7 @@ import type {
 
 export class InjectorFactory implements IInjectorFactory {
   /**
-   * The `root` {@link ReflectiveInjector | Injector}.
+   * The `root` {@link InjectorContainer}.
    *
    * Should be used to resolve app context level `singletons`.
    */
