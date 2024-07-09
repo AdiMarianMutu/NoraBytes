@@ -4,6 +4,7 @@ import type { RequiredDeep } from 'type-fest';
 import type { StoreMap as StoreMapBase } from './store-map';
 import type { StoreContext } from './store-context';
 import type { DetachedValue } from '../utils';
+import type { ReflexiveStoreToDotNotation } from './utils';
 
 export interface IReflexiveStore<
   StoreModel extends Record<string, any>,
@@ -70,7 +71,7 @@ export interface IReflexiveStore<
    * console.log(firstName.getValue(), lastName.getValue(), dobDay.getValue(), dobMonth.getValue(), dobYear.getValue());
    * ```
    */
-  reduceStore<T extends NoraTypes.Mappers.LeavesDotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T>;
+  reduceStore<T extends ReflexiveStoreToDotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T>;
 
   /**
    * Factory `method` which can be used to generate a new {@link StoreContext} property on demand.

@@ -4,6 +4,7 @@ import type {
   StoreObservable as ReflexiveStoreObservable,
   InitStoreConfig as ReflexiveInitStoreConfig,
   StoreReduceResult as ReflexiveStoreReduceResult,
+  ReflexiveStoreToDotNotation,
   IReflexiveStore,
 } from './types';
 import {
@@ -18,6 +19,7 @@ export type {
   ReflexiveStoreObservable,
   ReflexiveInitStoreConfig,
   ReflexiveStoreReduceResult,
+  ReflexiveStoreToDotNotation,
   IReflexiveStore,
 };
 export * from './reflexive-store';

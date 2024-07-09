@@ -1,5 +1,4 @@
 import { BehaviorSubject, skip, take, type OperatorFunction } from 'rxjs';
-import type * as NoraTypes from '@norabytes/nora-types';
 import type { RequiredDeep } from 'type-fest';
 import { StoreContextBuilder, DetachedValue, storeObservableFactory } from './utils';
 import type {
@@ -9,6 +8,7 @@ import type {
   StoreMap as StoreMapBase,
   StoreObservable,
   StoreReduceResult,
+  ReflexiveStoreToDotNotation,
 } from './types';
 
 export abstract class ReflexiveStore<
@@ -57,10 +57,7 @@ export abstract class ReflexiveStore<
     return this;
   }
 
-  reduceStore<T extends NoraTypes.Mappers.LeavesDotNotation<StoreModel>[]>(
-    ...ctx: T
-  ): StoreReduceResult<StoreModel, T> {
-    //@ts-ignore
+  reduceStore<T extends ReflexiveStoreToDotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T> {
     return ctx.reduce<StoreContext<StoreModel>[]>((reduceResult, storeModelDotNotationKey) => {
       const storeCtx = storeModelDotNotationKey.split('.').reduce((a, b) => a[b], this.store as any);
 
