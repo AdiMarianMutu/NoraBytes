@@ -14,11 +14,11 @@ export class StoreContextBuilder<
       throw new Error(`The '${key}' property value must be initialized with the 'ReflexiveStore.detachValue' method!`);
     }
 
-    const subject = new BehaviorSubject<T>(value);
+    const subject = new BehaviorSubject<T>(this.getReflexiveOrDetachedValue(value));
     const value$ = storeObservableFactory(subject, storeInstance.disposeEvent$);
 
     const getValue = () => {
-      return this.getReflexiveOrDetachedValue(subject.getValue());
+      return subject.getValue();
     };
 
     const setValue = (value: T | SetValueCallbackParam<T> | DetachedValue<(...a: any[]) => any>): T => {
