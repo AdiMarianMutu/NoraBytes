@@ -20,8 +20,14 @@ import { useInjectInternal } from './hooks/helpers';
  * </InjectorProvider>
  * ```
  */
-export function InjectorProvider({ module, children, injectInto = 'transient', preInjection }: InjectorProviderProps) {
-  const contextInjector = useInjectInternal({ module, injectInto });
+export function InjectorProvider({
+  module,
+  children,
+  injectInto = 'transient',
+  provideInjectorContainer,
+  preInjection,
+}: InjectorProviderProps) {
+  const contextInjector = useInjectInternal({ module, injectInto, provideInjectorContainer });
   const childrenProps = propsWithoutChildren(children?.props);
 
   const Renderer = useCallback(() => {

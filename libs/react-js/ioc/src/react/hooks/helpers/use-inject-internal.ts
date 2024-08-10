@@ -1,4 +1,4 @@
-import { type ReflectiveInjector, Injector as InjectorJs } from 'injection-js';
+import { ReflectiveInjector, Injector as InjectorJs } from 'injection-js';
 import { useContext } from 'react';
 import type { InjectorProviderProps } from '../../../types';
 import { Injector } from '../../../injector';
@@ -8,12 +8,15 @@ import { useOnce } from './use-once';
 export function useInjectInternal({
   module,
   injectInto = 'transient',
-}: Pick<InjectorProviderProps, 'module' | 'injectInto'>) {
+  provideInjectorContainer,
+}: Pick<InjectorProviderProps, 'module' | 'injectInto' | 'provideInjectorContainer'>) {
   const injectorContainer = useContext(InjectorContext) as ReflectiveInjector;
 
   const contextInjector = useOnce(() => {
     if (injectorContainer === InjectorJs.NULL) {
-      if (injectInto === 'root') {
+      if (provideInjectorContainer) {
+        return provideInjectorContainer;
+      } else if (injectInto === 'root') {
         Injector.injectIntoRoot(module);
 
         return Injector.getRootInjector();

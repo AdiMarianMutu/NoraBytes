@@ -1,6 +1,6 @@
 {
   "name": "@norabytes/reactjs-ioc",
-  "version": "1.1.12",
+  "version": "1.2.0",
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "description": "A simple Inversion of Control library for ReactJS built on top of the injection-js library.",
   "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/ioc/README.md",
@@ -20,20 +20,18 @@
   "private": false,
   "scripts": {
     "lint": "nx lint reactjs-ioc",
-    "build": "npm run lint && nx build reactjs-ioc",
-    "publish-lib": "npm run build && npm --prefix libs/react-js/ioc/dist publish --access public"
+    "test": "nx test reactjs-ioc",
+    "build": "nx build reactjs-ioc",
+    "publish-lib": "npm run lint && npm run test && npm run build && npm --prefix libs/react-js/ioc/dist publish --access public"
   },
   "dependencies": {
     "injection-js": "2.4.0",
+    "reflect-metadata": "^0.2.2",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
     "type-fest": "^4.21.0",
     "typescript": "^4.7.0"
-  },
-  "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
   },
   "type": "commonjs",
   "main": "./dist/src/index.js",

@@ -43,6 +43,14 @@ export interface InjectorProviderProps {
   injectInto?: 'root' | `scoped:${string}` | 'transient' | InjectorContainer;
 
   /**
+   * Optionally you can provide your own {@link InjectorContainer} which will be used by the component.
+   *
+   * - **You must pass the `EMPTY_PROVIDER_MODULE` to the {@link module} prop.**
+   * - **When using the {@link provideInjectorContainer} prop, the {@link injectInto} prop will be skipped!**
+   */
+  provideInjectorContainer?: InjectorContainer;
+
+  /**
    * Can be used to get access to the component `dependencies` _before_ the component has been rendered _(mounted)_.
    *
    * eg:
