@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "reflect-metadata": "^0.2.2",
     "shelljs": "^0.8.5",
     "tslib": "2.6.3"
   },
