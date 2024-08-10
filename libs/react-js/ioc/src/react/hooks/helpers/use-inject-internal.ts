@@ -13,10 +13,12 @@ export function useInjectInternal({
   const injectorContainer = useContext(InjectorContext) as ReflectiveInjector;
 
   const contextInjector = useOnce(() => {
-    if (injectorContainer === InjectorJs.NULL) {
-      if (provideInjectorContainer) {
-        return provideInjectorContainer;
-      } else if (injectInto === 'root') {
+    if (provideInjectorContainer) {
+      return provideInjectorContainer;
+    }
+
+    if (injectorContainer === InjectorJs.NULL && provideInjectorContainer === undefined) {
+      if (injectInto === 'root') {
         Injector.injectIntoRoot(module);
 
         return Injector.getRootInjector();
