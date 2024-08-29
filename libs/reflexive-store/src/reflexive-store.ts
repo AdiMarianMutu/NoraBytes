@@ -72,7 +72,11 @@ export abstract class ReflexiveStore<
     const storeContext = this.storeContextBuilder.build('<store-context-factory>', value, this);
 
     if (extendsMainPipe) {
-      storeContext.value$ = storeObservableFactory(storeContext.subject, this.disposeEvent$, ...pipe);
+      storeContext.value$ = storeObservableFactory(
+        storeContext.subject,
+        this.disposeEvent$,
+        ...pipe
+      ) as StoreObservable<T>;
     }
 
     return storeContext;
@@ -130,7 +134,10 @@ export abstract class ReflexiveStore<
     this.storeInitializedSubject = new BehaviorSubject(false);
     this.disposeEventSubject = config?.disposeEventSubject ?? new BehaviorSubject(false);
     this.disposeEvent$ = this.disposeEventSubject.asObservable().pipe(skip(1), take(1));
-    this.storeIsReady$ = storeObservableFactory(this.storeInitializedSubject, this.disposeEvent$);
+    this.storeIsReady$ = storeObservableFactory(
+      this.storeInitializedSubject,
+      this.disposeEvent$
+    ) as StoreObservable<boolean>;
 
     this.buildStoreContext(props);
     this.subscribeToStoreIsReady();
