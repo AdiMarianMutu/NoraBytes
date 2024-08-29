@@ -1,6 +1,6 @@
 {
   "name": "@norabytes/reactjs-reflexive-store",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "description": "A powerful state management library built-on-top of the RxJS library.",
   "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/react-js/reflexive-store/README.md",
@@ -24,7 +24,7 @@
     "publish-lib": "npm run lint && npm run test && npm run build && npm --prefix libs/react-js/reflexive-store/dist publish --access public"
   },
   "dependencies": {
-    "@norabytes/reflexive-store": "^2.0.11",
+    "@norabytes/reflexive-store": "^2.1.1",
     "lodash.isequal": "^4.5.0"
   },
   "devDependencies": {

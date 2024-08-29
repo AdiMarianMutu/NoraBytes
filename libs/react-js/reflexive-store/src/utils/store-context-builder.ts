@@ -9,10 +9,10 @@ export class StoreContextBuilder<
   StoreModel extends Record<string, any>,
   ReflexiveStoreInstance extends ReflexiveStore<StoreModel>
 > extends ReflexiveStoreContextBuilder<StoreModel, ReflexiveStoreInstance> {
-  override build<T>(key: string, value: T, storeInstance: ReflexiveStoreInstance): StoreContext<T> {
+  override build<T, U = T>(key: string, value: T, storeInstance: ReflexiveStoreInstance): StoreContext<U> {
     const storeContextBase = super.build(key, value, storeInstance);
 
-    const useValue = (distinctValue: boolean, ...pipe: OperatorFunction<T, T>[]) => {
+    const useValue = (distinctValue: boolean, ...pipe: OperatorFunction<T, U>[]) => {
       const currentValue = storeContextBase.getValue();
       const [stateReturnValue, setStateReturnValue] = useState(currentValue);
       const [, forceRerender] = useState(0);
@@ -24,11 +24,11 @@ export class StoreContextBuilder<
             ...pipe,
             startWith(currentValue),
             pairwise(),
-            tap<[T, T]>(([prevValue, newValue]) => {
+            tap<[U, U]>(([prevValue, newValue]) => {
               const valueHasChanged = !isEqual(prevValue, newValue);
 
               if (valueHasChanged) {
-                setStateReturnValue(newValue);
+                setStateReturnValue(newValue as unknown as T);
               } else if (distinctValue === false) {
                 forceRerender((x) => x + 1);
               }
@@ -42,6 +42,7 @@ export class StoreContextBuilder<
 
     return {
       ...storeContextBase,
+      //@ts-expect-error U could be instantiated with an arbitrary type which could be unrelated to T.
       useValue,
     };
   }

@@ -86,11 +86,8 @@ describe('ReactJS ReflexiveStore', () => {
             store.storeIsReady$.subscribe((isReady) => {
               if (!isReady) return;
 
-              store.store.more.inputText.onChange({
-                with: [debounceTime(50)],
-                do: () => {
-                  strokesCount += 1;
-                },
+              store.store.more.inputText.onChange([debounceTime(50)], () => {
+                strokesCount += 1;
               });
             });
           }}
