@@ -1,6 +1,6 @@
-import { BehaviorSubject, skip, tap } from 'rxjs';
+import { type OperatorFunction, BehaviorSubject, skip, tap } from 'rxjs';
 import type { ReflexiveStore } from '../reflexive-store';
-import type { StoreContext, SetValueCallbackParam, OnChangeCallbackParam, OnChangeWithPipeParams } from '../types';
+import type { StoreContext, SetValueCallbackParam, OnChangeCallbackParam } from '../types';
 import { DetachedValue } from './detached-value';
 import { isFunction, isClassInstance } from '../helpers';
 import { storeObservableFactory } from './store-observable-factory';
@@ -38,15 +38,26 @@ export class StoreContextBuilder<
       return getValue();
     };
 
-    const onChange = (params: OnChangeCallbackParam<T> | OnChangeWithPipeParams<T>): void => {
-      if (!this.onChangeParamsHasPipeAttached(params)) {
+    const onChange = (
+      params: OnChangeCallbackParam<T> | OperatorFunction<any, any>[],
+      cb?: OnChangeCallbackParam<T>
+    ) => {
+      if (typeof params === 'object' && !Array.isArray(params) && 'with' in params) {
+        throw new Error(
+          `Please use the new 'onChange' signature method.\r\nThe one you are using has been removed starting with 'v2.1.0'!`
+        );
+      }
+
+      const withCustomPipe = Array.isArray(params);
+
+      if (!withCustomPipe) {
         value$.pipe(skip(1), tap(params)).subscribe();
 
         return;
       }
 
       //@ts-expect-error Signature not matching.
-      value$.pipe(skip(1), ...params.with, tap(params.do)).subscribe();
+      value$.pipe(skip(1), ...params, tap(cb)).subscribe();
     };
 
     return {
@@ -66,13 +77,5 @@ export class StoreContextBuilder<
     if (value instanceof DetachedValue) return value.getValue();
 
     return value;
-  }
-
-  protected onChangeParamsHasPipeAttached<T>(obj: any): obj is OnChangeWithPipeParams<T> {
-    try {
-      return 'with' in obj;
-    } catch {
-      return false;
-    }
   }
 }

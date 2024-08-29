@@ -88,7 +88,7 @@ export interface IReflexiveStore<
    *
    * _The `takeUntil(`{@link disposeEvent$}`)` operator will be automatically appended at the end of the main pipe._
    */
-  storeContextFactory<T>(value: T, ...pipe: OperatorFunction<T, T>[]): StoreContext<T>;
+  storeContextFactory<T>(value: T, ...pipe: OperatorFunction<any, any>[]): StoreContext<unknown>;
 
   /**
    * Manually `invoke` this `method` to trigger the `dispose` process.

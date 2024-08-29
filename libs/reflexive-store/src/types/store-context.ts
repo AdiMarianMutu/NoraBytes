@@ -56,12 +56,14 @@ export type StoreContext<T> = {
    * store.counter.onChange((currentCounterValue) => console.log(currentCounterValue));
    * ```
    */
-  onChange<P extends OnChangeCallbackParam<T>>(cb: P): void;
+  onChange(cb: OnChangeCallbackParam<T>): void;
 
   /**
    * Additionaly you can provide an `RxJS pipe` before the provided {@link OnChangeCallbackParam | callback} will be invoked.
    *
-   * @param params Check {@link OnChangeWithPipeParams}.
+   * @param params **DEPRECATED**.
+   * @deprecated **Use the new signature method: `store.inputTextValue.onChange([map((textValue) => textValue.length === 0)], (isEmpty) => console.log(isEmpty));`**
+   * @removed `2.1.0`
    *
    * eg:
    * ```ts
@@ -74,20 +76,135 @@ export type StoreContext<T> = {
    * });
    * ```
    */
-  onChange<P extends OnChangeWithPipeParams<T>>(params: P): void;
+  onChange(params: 'DEPRECATED'): void;
+
+  /**
+   * Additionaly you can provide an `RxJS pipe` before the provided {@link OnChangeCallbackParam | callback} will be invoked.
+   *
+   * @param pipe Array of `RxJS Operators`.
+   * @param cb The `callback` which will be invoked after the {@link pipe}.
+   *
+   * eg:
+   * ```ts
+   * import { debounceTime, map } from 'rxjs';
+   *
+   * store.inputTextValue.onChange([
+   *    debounceTime(250),
+   *    map((x) => x.length === 0),
+   *  ],
+   *  (isEmpty) => {
+   *    // Type inference works as expected,
+   *    // the `isEmpty` value will show as `boolean` in your `IDE`.
+   *    console.log(isEmpty);
+   *  });
+   * ```
+   */
+  onChange<A>(pipe: [OperatorFunction<T, A>], cb: OnChangeCallbackParam<A>): void;
+  onChange<A, B>(pipe: [OperatorFunction<T, A>, OperatorFunction<A, B>], cb: OnChangeCallbackParam<B>): void;
+  onChange<A, B, C>(
+    pipe: [OperatorFunction<T, A>, OperatorFunction<A, B>, OperatorFunction<B, C>],
+    cb: OnChangeCallbackParam<C>
+  ): void;
+  onChange<A, B, C, D>(
+    pipe: [OperatorFunction<T, A>, OperatorFunction<A, B>, OperatorFunction<B, C>, OperatorFunction<C, D>],
+    cb: OnChangeCallbackParam<D>
+  ): void;
+  onChange<A, B, C, D, E>(
+    pipe: [
+      OperatorFunction<T, A>,
+      OperatorFunction<A, B>,
+      OperatorFunction<B, C>,
+      OperatorFunction<C, D>,
+      OperatorFunction<D, E>
+    ],
+    cb: OnChangeCallbackParam<E>
+  ): void;
+  onChange<A, B, C, D, E, F>(
+    pipe: [
+      OperatorFunction<T, A>,
+      OperatorFunction<A, B>,
+      OperatorFunction<B, C>,
+      OperatorFunction<C, D>,
+      OperatorFunction<D, E>,
+      OperatorFunction<E, F>
+    ],
+    cb: OnChangeCallbackParam<F>
+  ): void;
+  onChange<A, B, C, D, E, F, G>(
+    pipe: [
+      OperatorFunction<T, A>,
+      OperatorFunction<A, B>,
+      OperatorFunction<B, C>,
+      OperatorFunction<C, D>,
+      OperatorFunction<D, E>,
+      OperatorFunction<E, F>,
+      OperatorFunction<F, G>
+    ],
+    cb: OnChangeCallbackParam<G>
+  ): void;
+  onChange<A, B, C, D, E, F, G, H>(
+    pipe: [
+      OperatorFunction<T, A>,
+      OperatorFunction<A, B>,
+      OperatorFunction<B, C>,
+      OperatorFunction<C, D>,
+      OperatorFunction<D, E>,
+      OperatorFunction<E, F>,
+      OperatorFunction<F, G>,
+      OperatorFunction<G, H>
+    ],
+    cb: OnChangeCallbackParam<H>
+  ): void;
+  onChange<A, B, C, D, E, F, G, H, I>(
+    pipe: [
+      OperatorFunction<T, A>,
+      OperatorFunction<A, B>,
+      OperatorFunction<B, C>,
+      OperatorFunction<C, D>,
+      OperatorFunction<D, E>,
+      OperatorFunction<E, F>,
+      OperatorFunction<F, G>,
+      OperatorFunction<G, H>,
+      OperatorFunction<G, I>
+    ],
+    cb: OnChangeCallbackParam<I>
+  ): void;
+  onChange<A, B, C, D, E, F, G, H, I>(
+    pipe: [
+      OperatorFunction<T, A>,
+      OperatorFunction<A, B>,
+      OperatorFunction<B, C>,
+      OperatorFunction<C, D>,
+      OperatorFunction<D, E>,
+      OperatorFunction<E, F>,
+      OperatorFunction<F, G>,
+      OperatorFunction<G, H>,
+      OperatorFunction<G, I>,
+      ...OperatorFunction<any, any>[]
+    ],
+    cb: OnChangeCallbackParam<unknown>
+  ): void;
+  onChange<A, B, C, D, E, F, G, H, I>(
+    pipe: [
+      OperatorFunction<T, A>,
+      OperatorFunction<A, B>,
+      OperatorFunction<B, C>,
+      OperatorFunction<C, D>,
+      OperatorFunction<D, E>,
+      OperatorFunction<E, F>,
+      OperatorFunction<F, G>,
+      OperatorFunction<G, H>,
+      OperatorFunction<G, I>,
+      ...OperatorFunction<any, any>[]
+    ],
+    cb: OnChangeCallbackParam<unknown>
+  ): void;
 
   /** Imperative method to get the current value. */
   getValue(): T;
 };
 
 export type OnChangeCallbackParam<T> = (currentPayload: T) => void;
-export interface OnChangeWithPipeParams<T> {
-  /** Can be used to provide any valid {@link OperatorFunction | RxJS OperatorFunction}. */
-  with: OperatorFunction<T, T>[];
-
-  /** The `callback` which will be invoked at the _very **end**_ of the `RxJS pipe`. */
-  do: OnChangeCallbackParam<T>;
-}
 export type SetValueCallbackParam<T> = (currentPayload: T) => T;
 
 /** Internal wrapper of the `RxJS` {@link Observable} object. */

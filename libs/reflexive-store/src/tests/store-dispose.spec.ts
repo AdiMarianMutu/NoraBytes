@@ -28,10 +28,7 @@ describe('Store Dispose', () => {
   });
 
   it(`should have all the subscriptions completed`, (done) => {
-    store.store.arrays.bigInt.onChange({
-      with: [finalize(() => done())],
-      do: () => {},
-    });
+    store.store.arrays.bigInt.onChange([finalize(() => done())], () => {});
 
     store.disposeStore();
   }, 500);

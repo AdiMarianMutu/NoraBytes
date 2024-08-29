@@ -66,8 +66,8 @@ export abstract class ReflexiveStore<
   }
 
   storeContextFactory<T>(value: T): StoreContext<T>;
-  storeContextFactory<T>(value: T, ...pipe: OperatorFunction<T, T>[]): StoreContext<T>;
-  storeContextFactory<T>(value: T, ...pipe: OperatorFunction<T, T>[]): StoreContext<T> {
+  storeContextFactory<T>(value: T, ...pipe: OperatorFunction<any, any>[]): StoreContext<unknown>;
+  storeContextFactory<T>(value: T, ...pipe: OperatorFunction<any, any>[]): StoreContext<unknown> {
     const extendsMainPipe = pipe !== undefined && pipe.length > 0;
     const storeContext = this.storeContextBuilder.build('<store-context-factory>', value, this);
 

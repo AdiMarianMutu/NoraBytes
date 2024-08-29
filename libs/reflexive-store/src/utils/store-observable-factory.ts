@@ -4,13 +4,14 @@ import type { IReflexiveStore, StoreObservable } from '../types';
 export function storeObservableFactory<T>(
   valueSubject: Subject<T>,
   disposeEvent$: IReflexiveStore<T>['disposeEvent$'],
-  ...pipeInitialExtension: OperatorFunction<T, T>[]
-): StoreObservable<T> {
+  ...pipeInitialExtension: OperatorFunction<any, any>[]
+): StoreObservable<unknown> {
   const original$ = valueSubject.asObservable();
   const extended$ = valueSubject.asObservable();
 
-  extended$.pipe = (...pipe: OperatorFunction<T, T>[]) => {
-    return original$.pipe<T, T>(
+  //@ts-expect-error T could be instantiated with an arbitrary type which could be unrelated to U.
+  extended$.pipe = (...pipe: OperatorFunction<any, any>[]) => {
+    return original$.pipe(
       //@ts-expect-error Signature(s) not matching.
       ...[...pipeInitialExtension, ...pipe],
       takeUntil(disposeEvent$)
