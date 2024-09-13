@@ -1,32 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
-
-// Credits: https://stackoverflow.com/a/74000921
+import { useEffect, useRef } from 'react';
 
 /** Custom {@link useEffect} hook which will be run once. _(In `StrictMode` as well)_ */
 export function useEffectOnce(effect: () => React.EffectCallback) {
-  const destroyFunc = useRef<React.EffectCallback>();
-  const effectCalled = useRef(false);
-  const renderAfterCalled = useRef(false);
-  const [, forceRerender] = useState(0);
-
-  if (effectCalled.current) renderAfterCalled.current = true;
+  const cleanUpFn = useRef<() => void>(() => {});
+  const ref = useRef(false);
 
   useEffect(() => {
-    // only execute the effect first time around
-    if (!effectCalled.current) {
-      destroyFunc.current = effect();
-      effectCalled.current = true;
+    if (!ref.current) {
+      cleanUpFn.current = effect();
     }
 
-    // this forces one render after the effect is run
-    forceRerender((x) => x + 1);
-
     return () => {
-      // if the comp didn't render since the useEffect was called,
-      // we know it's the dummy React cycle
-      if (!renderAfterCalled.current) return;
+      if (!ref.current) {
+        ref.current = true;
+        return;
+      }
 
-      destroyFunc.current?.();
+      cleanUpFn.current();
     };
-  }, []);
+  }, [effect]);
 }
