@@ -1,5 +1,5 @@
 import { ReflexiveStoreContextBuilder } from '@norabytes/reflexive-store';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { type OperatorFunction, pairwise, tap, startWith } from 'rxjs';
 import isEqual from 'lodash.isequal';
 import type { ReflexiveStore } from '../reflexive-store';
@@ -17,7 +17,7 @@ export class StoreContextBuilder<
       const [stateReturnValue, setStateReturnValue] = useState(currentValue);
       const [, forceRerender] = useState(0);
 
-      useEffect(() => {
+      useMemo(() => {
         storeContextBase.value$
           .pipe(
             //@ts-expect-error Signature not matching.
