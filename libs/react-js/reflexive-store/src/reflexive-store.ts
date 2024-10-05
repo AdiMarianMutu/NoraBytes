@@ -1,10 +1,11 @@
 import {
   ReflexiveStore as ReflexiveStoreBase,
-  ReflexiveStoreContext,
+  reflexiveStoreObservableFactory,
   type ReflexiveStoreMap,
   type ReflexiveStoreToDotNotation,
+  type ReflexiveStoreObservable,
 } from '@norabytes/reflexive-store';
-import type { Observable, OperatorFunction } from 'rxjs';
+import { BehaviorSubject, type Observable, type OperatorFunction } from 'rxjs';
 import type { RequiredDeep } from 'type-fest';
 import { useContext, useMemo } from 'react';
 import type { IReflexiveStore, StoreMap, InitStoreConfig, StoreContext, StoreReduceResult } from './types';
@@ -15,12 +16,18 @@ export class ReflexiveStore<StoreModel extends Record<string, any>>
   extends ReflexiveStoreBase<StoreModel, StoreMap<StoreModel> & ReflexiveStoreMap<StoreModel>>
   implements IReflexiveStore<StoreModel>
 {
+  componentIsMounted$: ReflexiveStoreObservable<boolean | null>;
+
   protected override readonly storeContextBuilder: StoreContextBuilder<StoreModel, this>;
+
+  private readonly componentIsMountedSubject = new BehaviorSubject<boolean | null>(null);
 
   constructor() {
     super();
 
     this.storeContextBuilder = new StoreContextBuilder<StoreModel, this>();
+
+    this.componentIsMounted$ = reflexiveStoreObservableFactory(this.componentIsMountedSubject, this.storeDisposeEvent$);
   }
 
   override storeContextFactory<T>(value: T): StoreContext<T>;
@@ -45,9 +52,11 @@ export class ReflexiveStore<StoreModel extends Record<string, any>>
       // From functional component
       config?.onMountCallback?.(this);
       // Directly from the class
-      this.onComponentMount();
+      this.componentIsMountedSubject.next(true);
 
       return () => {
+        this.componentIsMountedSubject.next(false);
+
         if (_disposeEventIsFrom === 'own') {
           this.disposeStore();
         } else {
@@ -74,9 +83,6 @@ export class ReflexiveStore<StoreModel extends Record<string, any>>
       return () => {};
     });
   }
-
-  /** You can override this method which will be `invoked` once the component did mount. */
-  protected onComponentMount(): void {}
 
   private getDisposeEventFromCtxOrOwn(): [Observable<void>, 'ctx' | 'own'] {
     const { disposeEvent$: ctxDisposeEvent$ } = useContext(LifeCycleOrchestrator.Context);

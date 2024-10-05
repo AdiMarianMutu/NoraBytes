@@ -4,6 +4,7 @@ import type {
   ReflexiveDetachedValue,
   ReflexiveStoreMap,
   ReflexiveStoreToDotNotation,
+  ReflexiveStoreObservable,
 } from '@norabytes/reflexive-store';
 import type * as NoraTypes from '@norabytes/nora-types';
 import type { OperatorFunction } from 'rxjs';
@@ -13,6 +14,13 @@ import type { StoreContext } from './store-context';
 
 export interface IReflexiveStore<StoreModel extends Record<string, any>>
   extends IReflexiveStoreBase<StoreModel, StoreMap<StoreModel> & ReflexiveStoreMap<StoreModel>> {
+  /**
+   * It'll be automatically set to `true` (or `false` on unmount) only when using the {@link useInitStore} hook.
+   *
+   * By default its value is `null`.
+   */
+  componentIsMounted$: ReflexiveStoreObservable<boolean | null>;
+
   storeContextFactory<T>(value: T): StoreContext<T>;
   storeContextFactory<T>(value: T, ...pipe: OperatorFunction<any, any>[]): StoreContext<unknown>;
 

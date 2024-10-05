@@ -112,6 +112,18 @@ describe('ReactJS ReflexiveStore', () => {
     expect(store.store.more.inputText.getValue()).toBe('NoraBytes');
   });
 
+  it('should correctly subscribe to the `componentIsMounted` StoreContext', async () => {
+    let result = false;
+
+    store.componentIsMounted$.subscribe((isMounted) => {
+      result = isMounted === true;
+    });
+
+    await act(async () => render(<ComponentMock testId={TEST_ID} store={store} />));
+
+    expect(result).toBeTruthy();
+  });
+
   it('should invoke the `onDisposeStore` callback when component unmounts', async () => {
     const { unmount } = await act(async () => render(<ComponentMock testId={TEST_ID} store={store} />));
     let result = false;
