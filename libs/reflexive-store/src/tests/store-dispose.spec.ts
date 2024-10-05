@@ -32,4 +32,26 @@ describe('Store Dispose', () => {
 
     store.disposeStore();
   }, 500);
+
+  it(`should invoke the 'onStoreDispose' callbacks`, (done) => {
+    let firstCbResult = false;
+    store.onStoreDispose(() => (firstCbResult = true));
+    store.onStoreDispose(() => {
+      if (!firstCbResult) return;
+
+      done();
+    });
+
+    store.disposeStore();
+  });
+
+  it(`should not invoke the 'onStoreDispose' callbacks after the store already disposed`, () => {
+    let result = false;
+
+    store.disposeStore();
+
+    store.onStoreDispose(() => (result = true));
+
+    expect(result).toBeFalsy();
+  });
 });

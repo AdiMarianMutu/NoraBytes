@@ -15,7 +15,7 @@ export class StoreContextBuilder<
     }
 
     const subject = new BehaviorSubject<T>(this.getReflexiveOrDetachedValue(value));
-    const value$ = storeObservableFactory(subject, storeInstance.disposeEvent$);
+    const value$ = storeObservableFactory(subject, storeInstance.storeDisposeEvent$);
 
     const getValue = () => {
       return subject.getValue();

@@ -3,9 +3,9 @@ import type { IReflexiveStore, StoreObservable } from '../types';
 
 export function storeObservableFactory<T>(
   valueSubject: Subject<T>,
-  disposeEvent$: IReflexiveStore<T>['disposeEvent$'],
+  disposeEvent$: IReflexiveStore<T>['storeDisposeEvent$'],
   ...pipeInitialExtension: OperatorFunction<any, any>[]
-): StoreObservable<unknown> {
+): StoreObservable<T> {
   const original$ = valueSubject.asObservable();
   const extended$ = valueSubject.asObservable();
 

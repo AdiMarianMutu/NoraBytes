@@ -1,4 +1,4 @@
-import { BehaviorSubject, first, skip, take, type OperatorFunction } from 'rxjs';
+import { BehaviorSubject, first, map, type OperatorFunction } from 'rxjs';
 import type { RequiredDeep } from 'type-fest';
 import { StoreContextBuilder, DetachedValue, storeObservableFactory } from './utils';
 import type {
@@ -9,9 +9,10 @@ import type {
   StoreObservable,
   StoreReduceResult,
   ReflexiveStoreToDotNotation,
+  OnStoreInitConfig,
 } from './types';
 
-export abstract class ReflexiveStore<
+export class ReflexiveStore<
   StoreModel extends Record<string, any>,
   StoreMap extends StoreMapBase<StoreModel> = StoreMapBase<StoreModel>
 > implements IReflexiveStore<StoreModel>
@@ -33,13 +34,18 @@ export abstract class ReflexiveStore<
   }
 
   storeIsReady$: StoreObservable<boolean>;
-  disposeEvent$: StoreObservable<boolean>;
+  storeDisposeEvent$: StoreObservable<void>;
 
   protected readonly storeContextBuilder: StoreContextBuilder<StoreModel, this>;
 
   private internalStore!: StoreMap;
   private storeInitializedSubject: BehaviorSubject<boolean>;
   private disposeEventSubject: BehaviorSubject<boolean>;
+
+  private eventsCallbackMap = new Map<'onInit' | 'onDispose', (() => void)[]>([
+    ['onInit', []],
+    ['onDispose', []],
+  ]);
 
   constructor() {
     this.storeContextBuilder = new StoreContextBuilder();
@@ -55,6 +61,14 @@ export abstract class ReflexiveStore<
     this.init(props, config);
 
     return this;
+  }
+
+  onStoreInit(config: OnStoreInitConfig): void {
+    this.eventsCallbackMap.set('onInit', [...this.eventsCallbackMap.get('onInit'), config.invoke]);
+  }
+
+  onStoreDispose(cb: () => void): void {
+    this.eventsCallbackMap.set('onDispose', [...this.eventsCallbackMap.get('onDispose'), cb]);
   }
 
   reduceStore<T extends ReflexiveStoreToDotNotation<StoreModel>[]>(...ctx: T): StoreReduceResult<StoreModel, T> {
@@ -74,7 +88,7 @@ export abstract class ReflexiveStore<
     if (extendsMainPipe) {
       storeContext.value$ = storeObservableFactory(
         storeContext.subject,
-        this.disposeEvent$,
+        this.storeDisposeEvent$,
         ...pipe
       ) as StoreObservable<T>;
     }
@@ -83,18 +97,15 @@ export abstract class ReflexiveStore<
   }
 
   disposeStore(): void {
+    this.eventsCallbackMap.get('onDispose').forEach((cb) => cb());
+    this.eventsCallbackMap.set('onDispose', []);
+
     this.internalStore = undefined as any;
     this.storeInitializedSubject.next(false);
     this.storeInitializedSubject.complete();
     this.disposeEventSubject.next(true);
     this.disposeEventSubject.complete();
   }
-
-  /** You can override this method to execute your business logic once the {@link store} has been initalized. */
-  protected onStoreInit(): void {}
-
-  /** You can override this method to execute your business logic _before_ the {@link store} `dispose` process. */
-  protected onDispose(): void {}
 
   /** **Internally used, do not use.** */
   protected iterateStoreModel<T extends Record<string, any>>(
@@ -105,44 +116,39 @@ export abstract class ReflexiveStore<
     const nodeMap = {} as T;
 
     for (const [pKey, pValue] of Object.entries(currentNode)) {
-      const isNestedKvpObject =
-        typeof pValue === 'object' && !Array.isArray(pValue) && !(pValue instanceof DetachedValue) && pValue !== null;
+      const keyPath = currentNodeKey ? `${currentNodeKey}.${pKey}` : pKey;
 
-      // The current node has nested nodes, we process them too
-      if (isNestedKvpObject && Object.keys(pValue as any).length > 0) {
-        currentNodeKey += `${pKey}.`;
-
+      if (
+        typeof pValue === 'object' &&
+        pValue !== null &&
+        !(pValue instanceof DetachedValue) &&
+        !Array.isArray(pValue)
+      ) {
+        // Process nested nodes
         //@ts-expect-error Unknown type
-        nodeMap[pKey] = this.iterateStoreModel(pValue as StoreModel, cb, currentNodeKey);
+        nodeMap[pKey] = this.iterateStoreModel(pValue as StoreModel, cb, keyPath);
       } else {
+        // Call callback for leaf nodes
         //@ts-expect-error Unknown type
-        nodeMap[pKey] = cb(pKey, pValue, currentNode, currentNodeKey.substring(0, currentNodeKey.length - 1));
+        nodeMap[pKey] = cb(pKey, pValue, currentNode, keyPath);
       }
     }
 
     return nodeMap;
   }
 
-  protected extractStoreContextByDotNotation<T>(keyNodePath: string, currentKey: string): StoreContext<T> {
-    const isRootNode = keyNodePath.length === 0;
-    const keyDotPath = `${isRootNode ? '' : `${keyNodePath}.`}${currentKey}`;
-
-    return keyDotPath.split('.').reduce((a, b) => a[b], this.store as any);
-  }
-
   private init(props: RequiredDeep<StoreModel>, config?: InitStoreConfig): void {
     this.storeInitializedSubject = new BehaviorSubject(false);
+    this.storeIsReady$ = storeObservableFactory(this.storeInitializedSubject, this.storeDisposeEvent$);
+
     this.disposeEventSubject = config?.disposeEventSubject ?? new BehaviorSubject(false);
-    this.disposeEvent$ = this.disposeEventSubject.asObservable().pipe(skip(1), take(1));
-    this.storeIsReady$ = storeObservableFactory(
-      this.storeInitializedSubject,
-      this.disposeEvent$
-    ) as StoreObservable<boolean>;
+    this.storeDisposeEvent$ = this.disposeEventSubject.asObservable().pipe(
+      first((x) => x === true),
+      map(() => {})
+    );
 
     this.buildStoreContext(props);
-    this.subscribeToStoreIsReady();
-
-    this.storeInitializedSubject.next(true);
+    this.emitOnStoreInit();
   }
 
   private buildStoreContext(props: RequiredDeep<StoreModel>): void {
@@ -151,9 +157,10 @@ export abstract class ReflexiveStore<
     });
   }
 
-  private subscribeToStoreIsReady(): void {
-    this.storeIsReady$.pipe(first((isReady) => isReady)).subscribe(() => {
-      this.onStoreInit();
-    });
+  private emitOnStoreInit(): void {
+    this.storeInitializedSubject.next(true);
+    this.eventsCallbackMap.get('onInit').forEach((cb) => cb());
+
+    this.eventsCallbackMap.set('onInit', []);
   }
 }

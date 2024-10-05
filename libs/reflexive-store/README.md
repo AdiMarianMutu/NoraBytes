@@ -10,6 +10,16 @@ or
 
 `yarn add @norabytes/reflexive-store`
 
+### Breaking Changes
+
+- `v2.2.0`:
+  - The `ReflexiveStore` is not an `abstract` class anymore, this means that now you can directly do `const store = new ReflexiveStore()`.
+  - The `protected` `onStoreInit`, `onDispose` and `extractStoreContextByDotNotation` methods have been refactored/removed.
+    - `onStoreInit`: Has been refactored to be a global `callback` register.
+    - `onDispose`: Has been replaced by the `onStoreDispose` global `callback` register.
+    - `extractStoreContextByDotNotation`: Has been removed.
+  - Renamed the `disposeEvent$` property to `storeDisposeEvent$`
+
 ### Usage
 
 #### How it works
@@ -28,8 +38,8 @@ There are _3 methods_ and _2 properties_.
 - **[PROPERTY] `subject`** - Is the low-level `RxJS` [BehaviorSubject](https://www.learnrxjs.io/learn-rxjs/subjects/behaviorsubject 'BehaviorSubject'), this means that all the values from your
   store are actually `BehaviorSubject`.
 - **[PROPERTY] `value$`** - Is the low-level `RxJS` [Observable](https://www.learnrxjs.io/learn-rxjs/operators/creation/of 'Observable'), this means that you can `subscribe` to any value from your store and be `notified` when the value has changed.
-- **[METHOD] `setValue` _(3 overloads)_** - Can be used to `update` in real-time the `value` of any property from the store.
-- **[METHOD] `onChange` _(2 overloads)_** - Can be used to `register` a `callback` method which will be invoked whenever the `value` changes.
+- **[METHOD] `setValue`** - Can be used to `update` in real-time the `value` of any property from the store.
+- **[METHOD] `onChange`** - Can be used to `register` a `callback` method which will be invoked whenever the `value` changes.
 - **[METHOD] `getValue`** - Can be used to `imperatively` retrieve the value of any property from the store. _(This is not the best approach in the reactive world of RxJS)_
 
 > Now that we know that all of our store properties are just a bunch of `StoreContext` objects, we can move forward with some examples.

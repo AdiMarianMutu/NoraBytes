@@ -39,7 +39,7 @@ export interface IReflexiveStore<
    *
    * You can use it to automatically unsubscribe from observables you manually created.
    *
-   * **The `take(1)` operator is already attached to the pipe of this {@link Observable}.**
+   * **The `subscription` will be automatically closed after the first emission.**
    *
    * eg:
    * ```ts
@@ -47,7 +47,7 @@ export interface IReflexiveStore<
    * const notification$ = notificationSubject.asObservable().pipe(takeUntil(this.store.disposeEvent$));
    * ```
    */
-  disposeEvent$: Observable<boolean>;
+  storeDisposeEvent$: Observable<void>;
 
   /**
    * Initialize the store.
@@ -57,6 +57,22 @@ export interface IReflexiveStore<
    * @returns The `ReflexiveStore` instance having the store initialized.
    */
   initStore(props: RequiredDeep<StoreModel>, config?: InitStoreConfig): this;
+
+  /**
+   * Can be used to register a `callback` method which will be invoked once the `store` has been initialized.
+   *
+   * **N.B: The registered `callbacks` will be automatically unregistered after their invokation**
+   *
+   * _Check the {@link OnStoreInitConfig | OnStoreInit} `config` object._
+   */
+  onStoreInit(config: OnStoreInitConfig): void;
+
+  /**
+   * Can be used to register a `callback` method which will be invoked once **before** the {@link disposeStore} method invokation.
+   *
+   * **N.B: The registered `callbacks` will be automatically unregistered after their invokation**
+   */
+  onStoreDispose(cb: () => void): void;
 
   /**
    * Can be used to access all the {@link store} properties via `dot-notation` string.
@@ -98,10 +114,22 @@ export interface IReflexiveStore<
   disposeStore(): void;
 }
 
-export type InitStoreConfig = {
+export interface InitStoreConfig {
   /** You can override the internal `disposeEventSubject` by providing your own. */
   disposeEventSubject?: BehaviorSubject<boolean>;
-};
+}
+
+export interface OnStoreInitConfig {
+  /** Provide a `callback` method which will be invoked once the `store` has been initialized. */
+  invoke: () => void;
+
+  /**
+   * When set to `true`, the provided {@link invoke | method} will be `invoked` only after the component has been mounted.
+   *
+   * Defaults to `false`.
+   */
+  afterComponentMount?: boolean;
+}
 
 export type StoreReduceResult<StoreModel, P extends string[]> = {
   [K in keyof P]: P[K] extends string

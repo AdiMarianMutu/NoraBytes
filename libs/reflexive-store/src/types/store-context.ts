@@ -21,9 +21,7 @@ export type StoreContext<T> = {
    * @param payload The new value.
    * @returns The updated value retrieved using the {@link getValue} method.
    */
-  setValue(
-    payload: T extends (...a: any[]) => any ? 'DETACHED_VALUE_REQUIRED_OR_INVALID_METHOD_SIGNATURE_PROVIDED' : T
-  ): T;
+  setValue(payload: T extends (...a: any[]) => any ? SetValueInvalidSignature : T): T;
 
   /**
    * When the property value is a `method`, you must use the {@link DetachedValue | ReflexiveDetachedValue} to correctly update the `method`.
@@ -206,6 +204,7 @@ export type StoreContext<T> = {
 
 export type OnChangeCallbackParam<T> = (currentPayload: T) => void;
 export type SetValueCallbackParam<T> = (currentPayload: T) => T;
+export type SetValueInvalidSignature = 'DETACHED_VALUE_REQUIRED_OR_INVALID_METHOD_SIGNATURE_PROVIDED';
 
 /** Internal wrapper of the `RxJS` {@link Observable} object. */
 export interface StoreObservable<T> extends Omit<Observable<T>, 'pipe'> {
