@@ -9,5 +9,5 @@ export interface ProviderProps extends ProviderPropsBase {
    * and you must ensure that their `store` will be disposed only when the parent _(the provider)_
    * is being disposed.
    */
-  disposeEvent$: Observable<boolean>;
+  disposeEvent$: Observable<void>;
 }

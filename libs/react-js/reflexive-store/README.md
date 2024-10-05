@@ -10,6 +10,13 @@ or
 
 `yarn add @norabytes/reactjs-reflexive-store`
 
+### Breaking Changes
+
+- `v1.3.0`:
+  - The base `ReflexiveStore` lib has been updated to the `v2.2.0` which inclused breaking changes, check them on the [npm page](https://www.npmjs.com/package/@norabytes/reflexive-store 'ReflexiveStore').
+  - The `useBindToProps` hook has been removed.
+    - Use the `useEffect` hook, eg: `useEffect(() => { store.dep1.setValue(dep1); store.dep2.setValue(dep2); }, [dep1, dep2])`
+
 ### Usage
 
 TO-DO: Write the `Usage` section.

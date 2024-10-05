@@ -6,12 +6,11 @@ import {
 import type { Observable } from 'rxjs';
 import type { RequiredDeep } from 'type-fest';
 import { useContext, useMemo } from 'react';
-import isEqual from 'lodash.isequal';
 import type { IReflexiveStore, StoreMap, InitStoreConfig, StoreContext, StoreReduceResult } from './types';
 import { StoreContextBuilder, useEffectOnce } from './utils';
 import { LifeCycleOrchestrator } from './providers';
 
-export abstract class ReflexiveStore<StoreModel extends Record<string, any>>
+export class ReflexiveStore<StoreModel extends Record<string, any>>
   extends ReflexiveStoreBase<StoreModel, StoreMap<StoreModel> & ReflexiveStoreMap<StoreModel>>
   implements IReflexiveStore<StoreModel>
 {
@@ -25,7 +24,7 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>>
 
   useInitStore(props: RequiredDeep<StoreModel>, config?: InitStoreConfig<this>): this {
     const [_disposeEvent$, _disposeEventIsFrom] = this.getDisposeEventFromCtxOrOwn();
-    this.disposeEvent$ = _disposeEvent$;
+    this.storeDisposeEvent$ = _disposeEvent$;
 
     // Eager initialization.
     useMemo(() => this.initStore(props, config), []);
@@ -43,31 +42,14 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>>
 
       return () => {
         if (_disposeEventIsFrom === 'own') {
-          this.onDispose();
           this.disposeStore();
         } else {
           _disposeEvent$.subscribe(() => {
-            this.onDispose();
             this.disposeStore();
           });
         }
       };
     });
-
-    return this;
-  }
-
-  useBindToProps(props: Partial<StoreModel>): this {
-    useMemo(() => {
-      this.iterateStoreModel(props as StoreModel, (key, newValue, node, keyNodePath) => {
-        const storeContext = this.extractStoreContextByDotNotation<typeof newValue>(keyNodePath, key);
-        const currentValue = storeContext.getValue();
-
-        if (isEqual(currentValue, newValue)) return;
-
-        storeContext.setValue(newValue);
-      });
-    }, [props]);
 
     return this;
   }
@@ -80,7 +62,7 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>>
 
   useDispose(callback: () => void | Promise<void>): void {
     useEffectOnce(() => {
-      this.disposeEvent$.subscribe(() => callback);
+      this.storeDisposeEvent$.subscribe(() => callback);
 
       return () => {};
     });
@@ -89,10 +71,10 @@ export abstract class ReflexiveStore<StoreModel extends Record<string, any>>
   /** You can override this method which will be `invoked` once the component did mount. */
   protected onComponentMount(): void {}
 
-  private getDisposeEventFromCtxOrOwn(): [Observable<boolean>, 'ctx' | 'own'] {
+  private getDisposeEventFromCtxOrOwn(): [Observable<void>, 'ctx' | 'own'] {
     const { disposeEvent$: ctxDisposeEvent$ } = useContext(LifeCycleOrchestrator.Context);
     const disposeEventIsFromCtx = ctxDisposeEvent$ !== undefined;
 
-    return [ctxDisposeEvent$ ?? this.disposeEvent$, disposeEventIsFromCtx ? 'ctx' : 'own'];
+    return [ctxDisposeEvent$ ?? this.storeDisposeEvent$, disposeEventIsFromCtx ? 'ctx' : 'own'];
   }
 }

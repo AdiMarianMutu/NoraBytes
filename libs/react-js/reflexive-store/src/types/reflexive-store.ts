@@ -21,16 +21,6 @@ export interface IReflexiveStore<StoreModel extends Record<string, any>>
   useInitStore(props: RequiredDeep<StoreModel>, config?: InitStoreConfig<this>): this;
 
   /**
-   * {@link React} `hook` similar to the {@link useInitStore} `hook`,
-   * however the main difference is that whenever one of the provided {@link props}
-   * changes, the `StoreContext.setValue` will be invoked as well.
-   *
-   * This behaves exactly as the `deps` array, ensuring that specific properties from the store
-   * are always kept in sync with the specified {@link props}.
-   */
-  useBindToProps(props: Partial<StoreModel>): this;
-
-  /**
    * Can be used to access all the {@link store} properties via `dot-notation` string and automatically `re-render` the component whenever one of them changes.
    * @param ctx The {@link store} properties.
    *

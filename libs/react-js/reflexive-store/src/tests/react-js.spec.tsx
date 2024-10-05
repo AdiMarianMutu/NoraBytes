@@ -111,4 +111,15 @@ describe('ReactJS ReflexiveStore', () => {
     expect(strokesCount).toBe(1);
     expect(store.store.more.inputText.getValue()).toBe('NoraBytes');
   });
+
+  it('should invoke the `onDisposeStore` callback when component unmounts', async () => {
+    const { unmount } = await act(async () => render(<ComponentMock testId={TEST_ID} store={store} />));
+    let result = false;
+
+    store.onStoreDispose(() => (result = true));
+
+    unmount();
+
+    expect(result).toBeTruthy();
+  });
 });

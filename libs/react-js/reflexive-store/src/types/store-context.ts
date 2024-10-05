@@ -1,4 +1,4 @@
-import type { ReflexiveStoreContext, ReflexiveStoreObservable } from '@norabytes/reflexive-store';
+import type { ReflexiveStoreContext } from '@norabytes/reflexive-store';
 import type { OperatorFunction } from 'rxjs';
 
 export interface StoreContext<T> extends ReflexiveStoreContext<T> {
