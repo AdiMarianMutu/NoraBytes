@@ -122,13 +122,6 @@ export interface InitStoreConfig {
 export interface OnStoreInitConfig {
   /** Provide a `callback` method which will be invoked once the `store` has been initialized. */
   invoke: () => void;
-
-  /**
-   * When set to `true`, the provided {@link invoke | method} will be `invoked` only after the component has been mounted.
-   *
-   * Defaults to `false`.
-   */
-  afterComponentMount?: boolean;
 }
 
 export type StoreReduceResult<StoreModel, P extends string[]> = {
