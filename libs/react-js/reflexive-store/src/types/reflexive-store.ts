@@ -6,11 +6,16 @@ import type {
   ReflexiveStoreToDotNotation,
 } from '@norabytes/reflexive-store';
 import type * as NoraTypes from '@norabytes/nora-types';
+import type { OperatorFunction } from 'rxjs';
 import type { RequiredDeep } from 'type-fest';
 import type { StoreMap } from './store-map';
+import type { StoreContext } from './store-context';
 
 export interface IReflexiveStore<StoreModel extends Record<string, any>>
   extends IReflexiveStoreBase<StoreModel, StoreMap<StoreModel> & ReflexiveStoreMap<StoreModel>> {
+  storeContextFactory<T>(value: T): StoreContext<T>;
+  storeContextFactory<T>(value: T, ...pipe: OperatorFunction<any, any>[]): StoreContext<unknown>;
+
   /**
    * {@link React} `hook` which can be used to _initialize_ the internal `store` within a `ReactJS` _functional_ component.
    *

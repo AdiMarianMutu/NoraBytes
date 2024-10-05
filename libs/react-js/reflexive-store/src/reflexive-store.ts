@@ -1,9 +1,10 @@
 import {
   ReflexiveStore as ReflexiveStoreBase,
+  ReflexiveStoreContext,
   type ReflexiveStoreMap,
   type ReflexiveStoreToDotNotation,
 } from '@norabytes/reflexive-store';
-import type { Observable } from 'rxjs';
+import type { Observable, OperatorFunction } from 'rxjs';
 import type { RequiredDeep } from 'type-fest';
 import { useContext, useMemo } from 'react';
 import type { IReflexiveStore, StoreMap, InitStoreConfig, StoreContext, StoreReduceResult } from './types';
@@ -20,6 +21,12 @@ export class ReflexiveStore<StoreModel extends Record<string, any>>
     super();
 
     this.storeContextBuilder = new StoreContextBuilder<StoreModel, this>();
+  }
+
+  override storeContextFactory<T>(value: T): StoreContext<T>;
+  override storeContextFactory<T>(value: T, ...pipe: OperatorFunction<any, any>[]): StoreContext<unknown>;
+  override storeContextFactory<T>(value: T, ...pipe: OperatorFunction<any, any>[]): StoreContext<unknown> {
+    return super.storeContextFactory(value, ...pipe) as StoreContext<unknown>;
   }
 
   useInitStore(props: RequiredDeep<StoreModel>, config?: InitStoreConfig<this>): this {
