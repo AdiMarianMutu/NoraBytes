@@ -1,12 +1,12 @@
 {
   "name": "@norabytes/nora-types",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "description": "Set of custom generic Types for TypeScript used by the NoraBytes organization.",
-  "homepage": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/nora-types/README.md",
+  "homepage": "https://github.com/NoraBytes/NoraBytes/tree/main/libs/nora-types#readme",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/norabytes/typescript/-/blob/main/libs/nora-types"
+    "url": "https://github.com/NoraBytes/NoraBytes/tree/main/libs/nora-types"
   },
   "license": "MIT",
   "keywords": [
