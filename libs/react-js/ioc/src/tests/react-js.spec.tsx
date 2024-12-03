@@ -6,6 +6,7 @@ import '@testing-library/jest-dom';
 import { Injector } from '../injector';
 import { ComponentMock, Module, ServiceMock } from './mocks';
 import type { InjectorContainer } from '../types';
+import { InjectorProvider } from '../react';
 
 export const TEST_ID = 'reactjs-ioc';
 
@@ -49,5 +50,17 @@ describe('ReactJS ReflexiveStore', () => {
     const container = await screen.findByTestId(TEST_ID);
 
     expect(container.querySelector('h2')?.innerHTML).toBe('1');
+  });
+
+  it('should NOT fail when children.props does not exist', async () => {
+    await act(async () =>
+      render(
+        <InjectorProvider module={Module} provideInjectorContainer={injectorContainer}>
+          <hr />
+        </InjectorProvider>
+      )
+    );
+
+    expect(true).toBe(true);
   });
 });

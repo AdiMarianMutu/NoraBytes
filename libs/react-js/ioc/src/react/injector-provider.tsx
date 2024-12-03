@@ -28,7 +28,7 @@ export function InjectorProvider({
   preInjection,
 }: InjectorProviderProps) {
   const contextInjector = useInjectInternal({ module, injectInto, provideInjectorContainer });
-  const childrenProps = propsWithoutChildren(children?.props);
+  const childrenProps = propsWithoutChildren();
 
   const Renderer = useCallback(() => {
     preInjection?.();
