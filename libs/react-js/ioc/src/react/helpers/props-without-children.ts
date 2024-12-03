@@ -1,7 +1,8 @@
 import type * as AdvancedTypes from 'type-fest';
 
 /** Helper method which can be used to remove the `children` property from the provided {@link props}. */
-export function propsWithoutChildren<T extends Record<string, any>>(props: T): PropsWithoutChildrenReturn<T> {
+export function propsWithoutChildren<T extends Record<string, any>>(props?: T): PropsWithoutChildrenReturn<T> {
+  // props = props ?? ({} as any);
   const hasChildren = 'children' in props;
 
   if (!hasChildren) return props;
