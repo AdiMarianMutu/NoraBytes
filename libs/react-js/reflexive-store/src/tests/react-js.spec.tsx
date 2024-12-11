@@ -2,7 +2,7 @@ import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { debounceTime } from 'rxjs';
-import { ComponentMock, Store } from './mocks';
+import { ComponentMock, Store, STORE_DEFAULT_VALUES } from './mocks';
 
 export const TEST_ID = 'reflexive-store';
 
@@ -57,6 +57,61 @@ describe('ReactJS ReflexiveStore', () => {
     await act(async () => store.store.counter.setValue((x) => x + 1));
 
     expect(element).toHaveTextContent('1');
+  });
+
+  it('should NOT rerender the component if the value did not change', async () => {
+    const fnMock = jest.fn();
+
+    const Comp = () => {
+      store.useInitStore(STORE_DEFAULT_VALUES);
+      const counter = store.store.counter.useValue();
+
+      fnMock(counter);
+
+      return <div data-testid={TEST_ID}></div>;
+    };
+
+    await act(async () => render(<Comp />));
+    await act(async () => store.store.counter.setValue(0));
+
+    expect(fnMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('should rerender the component if the value changed', async () => {
+    const fnMock = jest.fn();
+    const newCounterValue = 1;
+
+    const Comp = () => {
+      store.useInitStore(STORE_DEFAULT_VALUES);
+      const counter = store.store.counter.useValue();
+
+      fnMock(counter);
+
+      return <div data-testid={TEST_ID}></div>;
+    };
+
+    await act(async () => render(<Comp />));
+    await act(async () => store.store.counter.setValue(newCounterValue));
+
+    expect(fnMock).toHaveBeenNthCalledWith(3, newCounterValue);
+  });
+
+  it('should rerender the component if the value did not change and distinctValue is false', async () => {
+    const fnMock = jest.fn();
+
+    const Comp = () => {
+      store.useInitStore(STORE_DEFAULT_VALUES);
+      const counter = store.store.counter.useValue(false);
+
+      fnMock(counter);
+
+      return <div data-testid={TEST_ID}></div>;
+    };
+
+    await act(async () => render(<Comp />));
+    await act(async () => store.store.counter.setValue(0));
+
+    expect(fnMock).toHaveBeenCalledTimes(4);
   });
 
   it('should successfully show the list with the updated names', async () => {
