@@ -1,6 +1,6 @@
 {
   "name": "@norabytes/reactjs-reflexive-store",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "author": "Adi-Marian Mutu <adi.mutu@norabytes.com>",
   "description": "A powerful state management library built-on-top of the RxJS library.",
   "homepage": "https://github.com/NoraBytes/NoraBytes/tree/main/libs/react-js/reflexive-store#readme",

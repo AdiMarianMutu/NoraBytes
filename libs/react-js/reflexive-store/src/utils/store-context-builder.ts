@@ -1,5 +1,5 @@
 import { ReflexiveStoreContextBuilder } from '@norabytes/reflexive-store';
-import { useMemo, useState } from 'react';
+import { useMemo, useReducer, useState } from 'react';
 import { type OperatorFunction, pairwise, tap, startWith } from 'rxjs';
 import isEqual from 'lodash.isequal';
 import type { ReflexiveStore } from '../reflexive-store';
@@ -14,7 +14,8 @@ export class StoreContextBuilder<
 
     const useValue = (distinctValue: boolean, ...pipe: OperatorFunction<T, U>[]) => {
       const currentValue = storeContextBase.getValue();
-      const [, forceRerender] = useState(0);
+      const [stateReturnValue, setStateReturnValue] = useState<U>(currentValue as unknown as U);
+      const [, forceRerender] = useReducer((x) => x + 1, 0);
 
       useMemo(() => {
         storeContextBase.value$
@@ -27,16 +28,22 @@ export class StoreContextBuilder<
               const valueHasChanged = !isEqual(prevValue, newValue);
 
               if (valueHasChanged) {
-                forceRerender((x) => x + 1);
+                setStateReturnValue(newValue);
               } else if (distinctValue === false) {
-                forceRerender((x) => x + 1);
+                // We must also make sure that we update the value just in case
+                // as the `initialValue` of the `useState` value is not updated after
+                // the 1st rendering cycle.
+                setStateReturnValue(newValue);
+
+                // Now we can force the re-render.
+                forceRerender();
               }
             })
           )
           .subscribe();
       }, []);
 
-      return currentValue;
+      return stateReturnValue;
     };
 
     return {
