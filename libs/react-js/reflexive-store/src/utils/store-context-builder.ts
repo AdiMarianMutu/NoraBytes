@@ -14,7 +14,6 @@ export class StoreContextBuilder<
 
     const useValue = (distinctValue: boolean, ...pipe: OperatorFunction<T, U>[]) => {
       const currentValue = storeContextBase.getValue();
-      const [stateReturnValue, setStateReturnValue] = useState(currentValue);
       const [, forceRerender] = useState(0);
 
       useMemo(() => {
@@ -28,7 +27,7 @@ export class StoreContextBuilder<
               const valueHasChanged = !isEqual(prevValue, newValue);
 
               if (valueHasChanged) {
-                setStateReturnValue(newValue as unknown as T);
+                forceRerender((x) => x + 1);
               } else if (distinctValue === false) {
                 forceRerender((x) => x + 1);
               }
@@ -37,7 +36,7 @@ export class StoreContextBuilder<
           .subscribe();
       }, []);
 
-      return stateReturnValue;
+      return currentValue;
     };
 
     return {
